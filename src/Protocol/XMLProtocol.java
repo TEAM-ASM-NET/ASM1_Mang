@@ -1,175 +1,421 @@
 package Protocol;
 
-import java.io.StringWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
+import java.io.*;
+
+import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+
+import java.util.logging.*;
+
 
 public class XMLProtocol {
-	 private static String Username, ip, port, status, message, filename, content,Password;
-	    
-	    public XMLProtocol(String _Username, String _ip, String _port, String _status) {
-	        Username = _Username;
-	        ip = _ip;
-	        port = _port;
-	        status = _status;
-	    }
-	    
-	    public XMLProtocol(String _Username, String _message) {
-	        Username = _Username;
-	        message = _message;
-	    }
-	    
-	    public XMLProtocol(String _filename, String _port, String _content) {
-	        filename = _filename;
-	        port = _port;
-	        content = _content;
-	    }
-	    
-	    public static String write(String type) {
-	        try {
-	            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-	            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-	            Document doc = docBuilder.newDocument(); 
-	            if(type.equals("register")) {//dang ky
-	            	Element register = doc.createElement("REGISTER");
-	            	doc.appendChild(register);
-	            	Element user_name = doc.createElement("USER_NAME");
-	            	user_name.setTextContent(Username);
-	            	register.appendChild(user_name);
-	            	Element pass_word = doc.createElement("PASSWORD");
-	            	pass_word.setTextContent(Password);
-	            	register.appendChild(pass_word);
-	            }
-	            
-	            if(type.equals("login"))  {
-	                Element session = doc.createElement("SESSION");
-	                doc.appendChild(session);
-	            
-	                Element peername = doc.createElement("PEER_NAME"); 
-	                peername.setTextContent(Username);
-	                session.appendChild(peername);
-	            
-	                Element _port = doc.createElement("PORT"); 
-	                _port.setTextContent(port);
-	                session.appendChild(_port);
-	            }
-	            else if(type.equals("alive")) {
-	                Element session = doc.createElement("SESSION_KEEP_ALIVE");
-	                doc.appendChild(session);
-	                
-	                Element peername = doc.createElement("PEER_NAME");
-	                peername.setTextContent(Username);
-	                session.appendChild(peername);
-	                
-	                Element _status = doc.createElement("STATUS");
-	                _status.setTextContent(status);
-	                session.appendChild(_status);
-	            }
-	            else if(type.equals("deny")) {
-	                Element session = doc.createElement("SESSION_DENY");
-	                doc.appendChild(session);
-	            }
-	            else if(type.equals("accept")) {
-	                Element session = doc.createElement("SESSION_ACCEPT");
-	                doc.appendChild(session);
-	                
-	                Element peername = doc.createElement("PEER_NAME");
-	                peername.setTextContent(Username);
-	                session.appendChild(peername);
-	                
-	                Element _ip = doc.createElement("IP");
-	                _ip.setTextContent(ip);
-	                session.appendChild(_ip);
-	                
-	                Element _port = doc.createElement("PORT");
-	                _port.setTextContent(port);
-	                session.appendChild(_port);
-	            }
-	            else if(type.equals("chat_req")) {
-	                Element chat = doc.createElement("CHAT_REQ");
-	                doc.appendChild(chat);
-	                
-	                Element peername = doc.createElement("PEER_NAME");
-	                peername.setTextContent(Username);
-	                chat.appendChild(peername);
-	            }
-	            else if(type.equals("chat_deny")) {
-	                Element chat = doc.createElement("CHAT_DENY");
-	                doc.appendChild(chat);
-	            }
-	            else if(type.equals("chat_accept")) {
-	                Element chat = doc.createElement("CHAT_ACCEPT");
-	                doc.appendChild(chat);
-	            }
-	            else if(type.equals("chat_msg")) {
-	                Element chat = doc.createElement("CHAT_MSG");
-	                chat.setTextContent(message);
-	                doc.appendChild(chat);
-	            }
-	            else if(type.equals("chat_close")) {
-	                Element chat = doc.createElement("CHAT_CLOSE");
-	                doc.appendChild(chat);
-	            }
-	            else if(type.equals("file_req")) {
-	                Element file = doc.createElement("FILE_REQ");
-	                file.setTextContent(filename);
-	                doc.appendChild(file);
-	            }
-	            else if(type.equals("file_req_noack")) {
-	                Element file = doc.createElement("FILE_REQ_NOACK");
-	                doc.appendChild(file);
-	            }
-	            else if(type.equals("file_req_ack")) {
-	                Element file = doc.createElement("FILE_REQ_ACK");
-	                doc.appendChild(file);
-	                
-	                Element _port = doc.createElement("PORT");
-	                _port.setTextContent(port);
-	                file.appendChild(_port);
-	            }
-	            else if(type.equals("file_data_begin")) {
-	                Element file = doc.createElement("FILE_DATA_BEGIN");
-	                doc.appendChild(file);
-	            }
-	            else if(type.equals("file_data")) {
-	                Element file = doc.createElement("FILE_DATA");
-	                file.setTextContent(content);
-	                doc.appendChild(file);
-	            }
-	            else if(type.equals("file_data_end")) {
-	                Element file = doc.createElement("FILE_DATA_END");
-	                doc.appendChild(file);
-	            }
-	            
-	            return docToString(doc);
-	        }
-	        catch(ParserConfigurationException | DOMException ex) {
-	            ex.printStackTrace();
-	        } catch (Exception ex) {
-	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
-	        }
-	        return null;
-	    }
-	    
-	     public static String docToString(Document _doc) throws Exception {
-		Transformer transformer = TransformerFactory.newInstance().newTransformer();
-		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 
+	public String documentToString(Document doc) throws Exception{
+		Transformer tran = TransformerFactory.newInstance().newTransformer();
+		tran.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		StringWriter writer = new StringWriter();
-		transformer.transform(new DOMSource((Node) _doc), new StreamResult(writer));
-		String output = writer.getBuffer().toString();
-		return output;
+		tran.transform(new DOMSource((Node)doc), new StreamResult(writer));
+		return writer.getBuffer().toString();
+	}
+	
+	public String register(String userName, String passWord){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element reg = doc.createElement("REGISTER");
+	         doc.appendChild(reg);
+	         Element user = doc.createElement("USER_NAME");
+	         user.setTextContent(userName);
+	         reg.appendChild(user);
+	         Element pass = doc.createElement("PASSWORD");
+	         pass.setTextContent(passWord);
+	         reg.appendChild(pass);
+	         
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
 	    }
+	}
+	
+	public String logIn(String userName, String passWord, String ip, String port){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element login = doc.createElement("REGISTER");
+	         doc.appendChild(login);
+	         Element user = doc.createElement("USER_NAME");
+	         user.setTextContent(userName);
+	         login.appendChild(user);
+	         Element pass = doc.createElement("PASSWORD");
+	         pass.setTextContent(passWord);
+	         login.appendChild(pass);
+	         Element _ip = doc.createElement("IP");
+	         _ip.setTextContent(ip);
+	         login.appendChild(_ip);
+	         Element _port = doc.createElement("PORT");
+	         _port.setTextContent(port);
+	         login.appendChild(_port);
+	         
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	public String logOut(String userName, String status){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element logout = doc.createElement("PEER_KEEP_ALIVE");
+	         doc.appendChild(logout);
+	         Element user = doc.createElement("USER_NAME");
+	         user.setTextContent(userName);
+	         logout.appendChild(user);
+	         Element _status = doc.createElement("STATUS");
+	         _status.setTextContent(status);
+	         logout.appendChild(_status);
+	         
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	
+	/* Status alive */
+	public String alive(String userName, String status){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element alive = doc.createElement("PEER_KEEP_ALIVE");
+	         doc.appendChild(alive);
+	         Element user = doc.createElement("USER_NAME");
+	         user.setTextContent(userName);
+	         alive.appendChild(user);
+	         Element _status = doc.createElement("STATUS");
+	         _status.setTextContent(status);
+	         alive.appendChild(_status);
+	         
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	
+	/* List XML user <SERVER_ACCEPT> */
+	public String listUser(DefaultTableModel table){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element list = doc.createElement("SERVER_ACCEPT");
+	         doc.appendChild(list);
+	         
+	         for(int i = table.getRowCount() - 1; i>=0; i--)
+	         {
+	        	 Element peer = doc.createElement("PEER");
+	        	 list.appendChild(peer);
+	        	 Element user = doc.createElement("USER_NAME");
+	        	 user.setTextContent(table.getValueAt(i, 1).toString());
+	        	 list.appendChild(user);
+	        	 Element ip = doc.createElement("IP");
+	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
+	        	 list.appendChild(ip);
+	        	 Element port = doc.createElement("USER_NAME");
+	        	 port.setTextContent(table.getValueAt(i, 3).toString());
+	        	 list.appendChild(port);
+	         }
+	         
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	public String registerDeny(){
+		return "<REGISTER_DENY>";
+	}
+	
+	//  Tra ve danh sach cac user dang online dang XML khi register accept
+	 
+	public String registerAccept(DefaultTableModel table){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element list = doc.createElement("REGISTER_ACCEPT");
+	         doc.appendChild(list);
+	         
+	         for(int i = table.getRowCount() - 1; i>=0; i--)
+	         {
+	        	 Element peer = doc.createElement("PEER");
+	        	 list.appendChild(peer);
+	        	 Element user = doc.createElement("USER_NAME");
+	        	 user.setTextContent(table.getValueAt(i, 1).toString());
+	        	 list.appendChild(user);
+	        	 Element ip = doc.createElement("IP");
+	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
+	        	 list.appendChild(ip);
+	        	 Element port = doc.createElement("USER_NAME");
+	        	 port.setTextContent(table.getValueAt(i, 3).toString());
+	        	 list.appendChild(port);
+	         }
+	         
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	public String loginDeny(){
+		return "<LOGIN_DENY/>";
+	}
+	
+	/*
+	 * Chat
+	 * */
+	public String chatDeny(){
+		return "<CHAT_DENY/>";
+	}
+	public String chatAccept(){
+		return "<CHAT_ACCEPT/>";
+	}
+	public String chatClose(){
+		return "<CHAT_CLOSE/>";
+	}
+	public String chatRequest(String userName){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element chat = doc.createElement("CHAT_REQ");
+	         doc.appendChild(chat);
+	         Element user = doc.createElement("USER_NAME");
+	         user.setTextContent(userName);
+	         chat.appendChild(user);
+	         
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	/*
+	 * Chuyen message dang string thanh XML
+	 * */
+	public String messageToXML(String message){
+		String convertMess = addEscape(message);
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element chat = doc.createElement("CHAT_MSG");
+	         chat.setTextContent(convertMess);
+	         doc.appendChild(chat);
+	         
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	/*
+	 * String message co dang <CHAT_MSG> <CHAT_MSG/>
+	 * */
+	public String XMLToMessage(String message){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
+	         doc.getDocumentElement().normalize();
+	         String element = doc.getElementsByTagName("CHAT_MSG").item(0).toString();
+	         
+	         return remoteEscape(element);
+	         
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	private String addEscape(String message){
+		int index = 0;
+		while(message.indexOf('<',index)>-1){
+			index = message.indexOf('<',index);
+			String part1 = message.substring(0, index);
+			String part2 = message.substring(index);
+			message = part1+ "<" + part2;
+			index = index+2;
+		}
+		 index = 0;
+		while(message.indexOf('>',index)>-1){
+			index = message.indexOf('<',index);
+			String part1 = message.substring(0, index);
+			String part2 = message.substring(index);
+			message = part1+ ">" + part2;
+			index = index+2;
+		}
+		return message;
+	}
+	private String remoteEscape(String message){
+		int index = 0;
+		while(message.indexOf('<',index)>-1){
+			index = message.indexOf('<',index);
+			String part1 = message.substring(0, index);
+			String part2 = message.substring(index+1);
+			message = part1 + part2;
+			index = index+1;
+		}
+		 index = 0;
+		while(message.indexOf('>',index)>-1){
+			index = message.indexOf('<',index);
+			String part1 = message.substring(0, index);
+			String part2 = message.substring(index+1);
+			message = part1 + part2;
+			index = index+1;
+		}
+		return message;
+	}
+	
+	/*
+	 * File
+	 * */
+	public String fileRequest(String fileName){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("FILE_REQ");
+	         file.setTextContent(fileName);
+	         doc.appendChild(file);
+	         
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	public String fileRequestNoAck(){
+		return "FILE_REQ_NOACK/";
+	}
+	public String fileRequestAck(String port){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("FILE_REQ_ACK");
+	         doc.appendChild(file);
+	         Element _port = doc.createElement("PORT");
+	         _port.setTextContent(port);
+	         file.appendChild(_port);
+	   
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	public String fileDataBegin(){
+		return "<FILE_DATA_BEGIN/> ";
+	}
+	public String fileData(String content){
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("FILE_DATA");
+	         file.setTextContent(content);
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
+	}
+	public String fileDataEnd(){
+		return "<FILE_DATA_END/>";
+	}
 }
