@@ -153,12 +153,12 @@ public class XMLProtocol {
 	        	 Element peer = doc.createElement("PEER");
 	        	 list.appendChild(peer);
 	        	 Element user = doc.createElement("USER_NAME");
-	        	 user.setTextContent(table.getValueAt(i, 1).toString());
+	        	 user.setTextContent(table.getValueAt(i, 0).toString());
 	        	 list.appendChild(user);
 	        	 Element ip = doc.createElement("IP");
 	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
 	        	 list.appendChild(ip);
-	        	 Element port = doc.createElement("USER_NAME");
+	        	 Element port = doc.createElement("PORT");
 	        	 port.setTextContent(table.getValueAt(i, 3).toString());
 	        	 list.appendChild(port);
 	         }
@@ -194,12 +194,12 @@ public class XMLProtocol {
 	        	 Element peer = doc.createElement("PEER");
 	        	 list.appendChild(peer);
 	        	 Element user = doc.createElement("USER_NAME");
-	        	 user.setTextContent(table.getValueAt(i, 1).toString());
+	        	 user.setTextContent(table.getValueAt(i, 0).toString());
 	        	 list.appendChild(user);
 	        	 Element ip = doc.createElement("IP");
 	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
 	        	 list.appendChild(ip);
-	        	 Element port = doc.createElement("USER_NAME");
+	        	 Element port = doc.createElement("PORT");
 	        	 port.setTextContent(table.getValueAt(i, 3).toString());
 	        	 list.appendChild(port);
 	         }
