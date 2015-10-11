@@ -2,6 +2,7 @@ package Client;
 
 
 import Client.UploadFile;
+import Client.DownloadFile;
 
 import java.io.*;
 import java.net.*;
@@ -16,6 +17,8 @@ import javax.swing.JFileChooser;
 import javax.swing.SpringLayout;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+
+import socket.Message;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -68,17 +71,17 @@ public class ClientGUI {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
-		springLayout.putConstraint(SpringLayout.SOUTH, btnSend, -33, SpringLayout.SOUTH, frame.getContentPane());
 		frame.getContentPane().add(btnSend);
 		
 		btnLinkSend = new JButton("...");
+		springLayout.putConstraint(SpringLayout.SOUTH, btnLinkSend, -33, SpringLayout.SOUTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.NORTH, btnSend, 0, SpringLayout.NORTH, btnLinkSend);
+		springLayout.putConstraint(SpringLayout.WEST, btnSend, 6, SpringLayout.EAST, btnLinkSend);
 		btnLinkSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				actionChooseFile(e);
 			}
 		});
-		springLayout.putConstraint(SpringLayout.WEST, btnSend, 4, SpringLayout.EAST, btnLinkSend);
-		springLayout.putConstraint(SpringLayout.NORTH, btnLinkSend, 0, SpringLayout.NORTH, btnSend);
 		frame.getContentPane().add(btnLinkSend);
 		
 		textFieldMess = new JTextField();
@@ -113,10 +116,10 @@ public class ClientGUI {
             }
         }
     }
-	private void actionSendFile(java.awt.event.ActionEvent e) {
-		
-	}
 	
+//	private void actionSendFile(java.awt.event.ActionEvent e) {
+//		
+//	}
 
     public javax.swing.JButton btnSend;
     public javax.swing.JButton btnLinkSend;
