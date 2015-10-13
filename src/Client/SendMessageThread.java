@@ -1,11 +1,44 @@
 package Client;
 
 import java.net.*;
+
+import Protocol.XMLProtocol;
+
 import java.io.*;
 
 public class SendMessageThread extends Thread{
-	@Override
-	public void run() {
+	
+	public SendMessageThread(Socket s, String msg) {
+		// TODO Auto-generated constructor stub
+		this.socket = s;
+		this.msg = msg;
+		protocol = new XMLProtocol();
 		
 	}
+	@Override
+	public void run() {
+		try {
+			sender = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			//while (true){
+			
+				String send = protocol.messageToXML(msg);
+				sender.write(send + "\r\n");
+				sender.flush();
+			//}
+		}catch (Exception e){
+			
+		}
+	}
+	public void start(){
+		if (t == null){
+			t = new Thread(this);
+			t.start();
+		}
+	}
+	BufferedWriter sender = null;
+	Thread t = null;
+	Socket socket = null;
+	String msg;
+	XMLProtocol protocol = null;
+	//ClientGUI frm = null;
 }
