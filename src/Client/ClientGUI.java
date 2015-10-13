@@ -1,15 +1,12 @@
 package Client;
 
+import Protocol.*;
+
 import java.io.*;
 import java.net.*;
 
 import javax.swing.JFrame;
 
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridLayout;
-
-import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.SpringLayout;
 import javax.swing.JButton;
@@ -17,18 +14,21 @@ import javax.swing.JTextField;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JEditorPane;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.JTextArea;
 
 public class ClientGUI extends JFrame{
 
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Launch the application.
 	 */
@@ -81,7 +81,28 @@ public class ClientGUI extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				//ClientGUI f = new ClientGUI();
 				//f.setVisible
-				sendMessage();
+
+				if (Sender)
+				{
+					long size = file.length();
+					if (size<150*1024*1024)
+					{
+						send( new XMLProtocol().fileDataBegin());
+						sendfile(filepath);
+						send(new XMLProtocol().fileDataEnd());
+						textFieldMess.setText("");
+						txtrMsg.append("File shared success\n");
+					}
+					else 
+					{
+						txtrMsg.append("File is size too large\n");
+					}
+							
+				}
+				else{
+					sendMessage();
+				}
+
 			}
 		});
 		this.getContentPane().add(btnSend);
@@ -150,7 +171,7 @@ public class ClientGUI extends JFrame{
         if(file != null){
             if(!file.getName().isEmpty()){
                 btnSend.setEnabled(true); String str;
-                
+                Sender = true;
                 if(textFieldMess.getText().length() > 30){
                     String t = file.getPath();
                     str = t.substring(0, 20) + " [...] " + t.substring(t.length() - 20, t.length());
@@ -163,10 +184,42 @@ public class ClientGUI extends JFrame{
         }
     }
 	
-	private void actionSendFile(java.awt.event.ActionEvent e) {
-		
-	}
 	
+	public void acctionChooseFile(){
+			JFileChooser fileChooser = new JFileChooser();
+		    fileChooser.showDialog(this, "Select File");
+		    Sender=true;
+		    textFieldMess.setText(file.getName());
+		    filepath = file.getPath();
+		    try {
+		    	send(new XMLProtocol().fileRequest("FILE_REQ"));
+		    } catch (Exception ex) {
+		    }
+	}
+	public void sendfile(String _filepath) {
+			        try {
+			               @SuppressWarnings("resource")
+						FileInputStream fileshare = new FileInputStream(_filepath);
+			               byte[] buffer = new byte[1024];
+		                int count;
+			            
+			                while((count = fileshare.read(buffer)) >= 0){
+			                    output.write(buffer, 0, count);
+	                }             
+		                output.flush();
+	            } catch (IOException ex) {
+			                System.out.println("Error: Can't send");
+			            }
+	}
+
+	public void send(String message) {
+			       try {
+			           output.writeUTF(message);
+			            output.flush();
+			       } 
+			        catch (IOException ex) {
+			        }
+		}
 	public void addMessage(String msg, String src)
 	{
 		String message = src + ":" + msg + "\r\n";
@@ -176,6 +229,7 @@ public class ClientGUI extends JFrame{
 	public void sendMessage()
 	{
 		addMessage(textFieldMess.getText(), "Me");
+		textFieldMess.setText("");
 		sender = new SendMessageThread(client, textFieldMess.getText());
 		sender.start();
 	}
@@ -195,6 +249,9 @@ public class ClientGUI extends JFrame{
     public String username;
   //  public Thread clientThread;
     public File file;
-    
+    private static DataInputStream input;
+    private static DataOutputStream output;
+    private String filepath;
+    boolean Sender=false;
   
 }
