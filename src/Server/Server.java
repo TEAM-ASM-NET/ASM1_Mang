@@ -10,7 +10,7 @@ public class Server implements Runnable{
 	protected ServerForm form;
 	private ServerSocket server;
 	private Thread thread = null;
-	private int port = 6001;
+	private int port = 6696;
 
 	
 	public Server(ServerForm form){
