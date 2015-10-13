@@ -18,15 +18,22 @@ public class MainClass {
 			f.setVisible(true);
 			
 			//Send request to chat
+
+			Socket socket = new Socket(serverIp, serverPort);
+			
+			int peerPort = socket.getPort();
+			
+			//Wait for other peer connet to chat P2P
+			ServerSocket peerSocket = new ServerSocket(peerPort);
+			
+			ClientGUI window = new ClientGUI();
+			window.setVisible(true);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			//System.exit(0);
 		}
 	}
-	public static void sendRequsetoChat()
-	{
-		
-	}
+
 	
 }
