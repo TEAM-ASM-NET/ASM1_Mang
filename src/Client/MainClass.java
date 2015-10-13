@@ -10,6 +10,15 @@ public class MainClass {
 			final int serverPort = 6696;
 			final String serverIp = "localhost";
 			
+			//Listen other peer to chat
+			SocketPeer p = new SocketPeer();
+			p.start();
+			
+			UserStatusGUI f = new UserStatusGUI();
+			f.setVisible(true);
+			
+			//Send request to chat
+
 			Socket socket = new Socket(serverIp, serverPort);
 			
 			int peerPort = socket.getPort();
@@ -25,5 +34,6 @@ public class MainClass {
 			//System.exit(0);
 		}
 	}
+
 	
 }

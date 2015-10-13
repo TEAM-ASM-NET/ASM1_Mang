@@ -2,24 +2,18 @@ package Client;
 
 
 
-import Server.Server;
-import Protocol.XMLProtocol;
+import Protocol.*;
 
 import java.io.*;
 import java.net.*;
 
 import javax.swing.JFrame;
 
-
-
-
-
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.GridLayout;
 
-
-
-
-
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.SpringLayout;
 import javax.swing.JButton;
@@ -28,36 +22,24 @@ import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-
+import javax.swing.JEditorPane;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.JTextArea;
 
-@SuppressWarnings("serial")
 public class ClientGUI extends JFrame{
 
-	//private JFrame frame;
-	public Socket client;
-    public int port;
-    public String username;
-    public Thread clientThread;
-    public File file;
-    private static DataInputStream input;
-    private static DataOutputStream output;
-    private String filepath;
-    boolean Sender=false;
+	
 
 	/**
 	 * Launch the application.
 	 */
-    public ClientGUI(DataInputStream in, DataOutputStream out) {
-        input = in;
-        output = out;
-    }
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		newForm();
 		
 	}
@@ -76,13 +58,19 @@ public class ClientGUI extends JFrame{
 			}
 		});
 	}
+	*/
 	/**
 	 * Create the application.
 	 */
 	public ClientGUI() {
 		initialize();
+		
 	}
-
+	public void connect(Socket s){
+		client = s;
+		reciever = new RecieveMessageThread(this, s);
+		reciever.start();
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -100,6 +88,7 @@ public class ClientGUI extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				//ClientGUI f = new ClientGUI();
 				//f.setVisible
+
 				if (Sender)
 				{
 					long size = file.length();
@@ -117,7 +106,10 @@ public class ClientGUI extends JFrame{
 					}
 							
 				}
-				
+				else{
+					sendMessage();
+				}
+
 			}
 		});
 		this.getContentPane().add(btnSend);
@@ -128,7 +120,7 @@ public class ClientGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.WEST, btnSend, 1, SpringLayout.EAST, btnLinkSend);
 		btnLinkSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				acctionChooseFile();
+				actionChooseFile(e);
 			}
 		});
 		this.getContentPane().add(btnLinkSend);
@@ -178,58 +170,77 @@ public class ClientGUI extends JFrame{
 		
 	}
 
-	public void acctionChooseFile()
-	{
-		JFileChooser fileChooser = new JFileChooser();
-        fileChooser.showDialog(this, "Select File");
+	private void actionChooseFile(java.awt.event.ActionEvent e) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.showDialog(this, "Select file");
         file = fileChooser.getSelectedFile();
+        
         if(file != null){
             if(!file.getName().isEmpty()){
-            	Sender=true;
-            	textFieldMess.setText(file.getName());
-                filepath = file.getPath();
-                try {
-                   send(new XMLProtocol().fileRequest("FILE_REQ"));
-                } catch (Exception ex) {
+                btnSend.setEnabled(true); String str;
+                Sender = true;
+                if(textFieldMess.getText().length() > 30){
+                    String t = file.getPath();
+                    str = t.substring(0, 20) + " [...] " + t.substring(t.length() - 20, t.length());
                 }
+                else{
+                    str = file.getPath();
+                }
+                textFieldMess.setText(str);
             }
         }
-	}
-	public void send(String message) {
-        try {
-            output.writeUTF(message);
-            output.flush();
-        } 
-        catch (IOException ex) {
-        }
     }
-	 @SuppressWarnings("resource")
+	
+	
+	public void acctionChooseFile(){
+			JFileChooser fileChooser = new JFileChooser();
+		    fileChooser.showDialog(this, "Select File");
+		    Sender=true;
+		    textFieldMess.setText(file.getName());
+		    filepath = file.getPath();
+		    try {
+		    	send(new XMLProtocol().fileRequest("FILE_REQ"));
+		    } catch (Exception ex) {
+		    }
+	}
 	public void sendfile(String _filepath) {
-	        try {
-	                FileInputStream fileshare = new FileInputStream(_filepath);
-	                byte[] buffer = new byte[1024];
-	                int count;
-	            
-	                while((count = fileshare.read(buffer)) >= 0){
-	                    output.write(buffer, 0, count);
+			        try {
+			               @SuppressWarnings("resource")
+						FileInputStream fileshare = new FileInputStream(_filepath);
+			               byte[] buffer = new byte[1024];
+		                int count;
+			            
+			                while((count = fileshare.read(buffer)) >= 0){
+			                    output.write(buffer, 0, count);
 	                }             
-	                output.flush();
+		                output.flush();
 	            } catch (IOException ex) {
-	                System.out.println("Error: Can't send");
-	            }
-	    }
+			                System.out.println("Error: Can't send");
+			            }
+	}
+
+	public void send(String message) {
+			       try {
+			           output.writeUTF(message);
+			            output.flush();
+			       } 
+			        catch (IOException ex) {
+			        }
+		}
 	public void addMessage(String msg, String src)
 	{
 		String message = src + ":" + msg + "\r\n";
 		txtrMsg.setText(txtrMsg.getText() + message);
 	}
 
-	public String sendMessage()
+	public void sendMessage()
 	{
 		addMessage(textFieldMess.getText(), "Me");
-		return textFieldMess.getText();
+		sender = new SendMessageThread(client, textFieldMess.getText());
+		sender.start();
 	}
-    public javax.swing.JButton btnSend;
+
+	public javax.swing.JButton btnSend;
     public javax.swing.JButton btnLinkSend;
     public javax.swing.JTextField textFieldMess;
    
@@ -238,5 +249,15 @@ public class ClientGUI extends JFrame{
     
     private SendMessageThread sender = null;
     private RecieveMessageThread reciever = null;
-	
+  //private JFrame frame;
+  	public Socket client;
+    //public int port;
+    public String username;
+  //  public Thread clientThread;
+    public File file;
+    private static DataInputStream input;
+    private static DataOutputStream output;
+    private String filepath;
+    boolean Sender=false;
+  
 }
