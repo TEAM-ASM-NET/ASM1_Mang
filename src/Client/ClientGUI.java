@@ -113,7 +113,7 @@ public class ClientGUI extends JFrame{
 					}
 					else 
 					{
-						txtrMsg.append("F File is size too large\n");
+						txtrMsg.append("File is size too large\n");
 					}
 							
 				}
