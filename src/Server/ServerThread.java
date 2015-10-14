@@ -88,7 +88,7 @@ public class ServerThread extends Thread{
 					if(doc.getDocumentElement().getNodeName().equals("REGISTER")){
 						String userName = doc.getElementsByTagName("USER_NAME").item(0).getTextContent();
 						String pass = doc.getElementsByTagName("PASSWORD").item(0).getTextContent();
-						System.out.println("vô");
+						System.out.println("vï¿½");
 						if(checkUserName(userName)){
 							
 							String[] dataRow ={userName,pass,socket.getInetAddress().toString(),""+ID+""};
@@ -118,8 +118,10 @@ public class ServerThread extends Thread{
 							String ip = doc.getElementsByTagName("IP").item(0).getTextContent();
 							String port = doc.getElementsByTagName("P0RT").item(0).getTextContent();
 							table.setValueAt(ip, row, 2);
-							table.setValueAt(port, row, 2);
+							table.setValueAt(port, row, 3);
+							sendMessage(new XMLProtocol().listUser(table));
 						}
+						else sendMessage(new XMLProtocol().loginDeny());
 					}
 				}
 			}

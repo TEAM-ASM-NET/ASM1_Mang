@@ -246,7 +246,7 @@ public class UserStatusGUI extends JFrame{
 				}
 			}
 			catch(Exception e){
-				System.out.println(e.getMessage());
+				System.out.println("kkkkk"+e.getMessage());
 			}
 		}
 		else {
