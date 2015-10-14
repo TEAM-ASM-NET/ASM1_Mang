@@ -69,6 +69,10 @@ public class ServerForm extends JFrame{
 	 */
 	private void initialize() {
 		table = new DefaultTableModel();
+		table.addColumn("username");
+		table.addColumn("pass");
+		table.addColumn("ip");
+		table.addColumn("port");
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 508, 393);
@@ -133,7 +137,8 @@ public class ServerForm extends JFrame{
 		            		String pass = eElement.getElementsByTagName("PASSWORD").item(0).getTextContent();
 		            		
 		            		String[] data = {userName,pass,"",""};
-		            		table.addRow(data);		 
+		            		table.addRow(data);
+		            		//System.out.println(table.getValueAt(i, 0) + " dong thu" + i);
 		            	}
 		            }
 		            StartMouseClicked(arg0);
@@ -141,7 +146,7 @@ public class ServerForm extends JFrame{
 					}
 					catch(Exception ei){
 						txtArea.append("Error read file");
-						System.err.println(ei.getMessage());
+						System.out.println(ei.getMessage());
 					}
 			}
 		});

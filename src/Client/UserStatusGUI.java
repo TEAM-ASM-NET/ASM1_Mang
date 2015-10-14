@@ -37,6 +37,14 @@ public class UserStatusGUI extends JFrame{
 	}
 	
 	private void Initially(){
+		
+		table = new DefaultTableModel();
+		table.addColumn("username");
+		
+		table.addColumn("ip");
+		table.addColumn("port");
+		
+		
 		SpringLayout springLayout = new SpringLayout();
 		getContentPane().setLayout(springLayout);
 		
@@ -216,18 +224,13 @@ public class UserStatusGUI extends JFrame{
 					sendInfo = protocol.logIn(txtusername.getText(), pwdTxtpass.getText(), ip,Integer.toString(port));
 				}else sendInfo = protocol.register(txtusername.getText(), pwdTxtpass.getText());
 				
-//				BufferedWriter sender = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-//				sender.write(sendInfo);JOptionPane.showMessageDialog(null, sendInfo);
-//				sender.flush();
-//				
 				DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 				dout.writeUTF(sendInfo);
 				dout.flush();
 				
 				//Recieve list user online from server
-				BufferedReader recieve = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				String lstUser = recieve.readLine();
-				
+				DataInputStream recieve = new DataInputStream(socket.getInputStream());
+				String lstUser = recieve.readUTF();
 				//Add user to Jlist
 				boolean resultLogin = User2List(lstUser);
 				
@@ -235,7 +238,7 @@ public class UserStatusGUI extends JFrame{
 					btnLogin.setEnabled(false);
 		    		btnRegister.setEnabled(false);
 		    		list.setEnabled(true);
-		    		txtHostname.setEditable(false);
+		    		txtHostname.setEnabled(false);
 		    		txthostport.setEnabled(false);
 		    		btnConnect.setEnabled(false);
 		    		txtusername.setEnabled(false);
@@ -286,7 +289,7 @@ public class UserStatusGUI extends JFrame{
             btnLogin.setEnabled(false);
     		btnRegister.setEnabled(false);
     		list.setEnabled(true);
-    		txtHostname.setEditable(false);
+    		txtHostname.setEnabled(false);
     		txthostport.setEnabled(false);
     		btnConnect.setEnabled(false);
     		txtusername.setEnabled(false);
