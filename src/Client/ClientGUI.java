@@ -5,53 +5,20 @@ import Protocol.*;
 import java.io.*;
 import java.net.*;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
-import javax.swing.JFileChooser;
-import javax.swing.SpringLayout;
-import javax.swing.JButton;
-import javax.swing.JTextField;
+import java.awt.event.*;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 public class ClientGUI extends JFrame{
 
-	
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	/**
 	 * Launch the application.
 	 */
-/*	public static void main(String[] args) {
-		newForm();
-		
-	}
 	
-	public static void newForm()
-	{
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ClientGUI window = new ClientGUI();
-				//	window.frame.setVisible(true);
-					window.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	*/
 	/**
 	 * Create the application.
 	 */
@@ -67,6 +34,10 @@ public class ClientGUI extends JFrame{
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	public ClientGUI(DataInputStream in, DataOutputStream out) {
+		   input = in;
+		   output = out;
+	 }
 	private void initialize() {
 		//frame = new JFrame();
 		this.setBounds(100, 100, 434, 300);
@@ -113,7 +84,7 @@ public class ClientGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.WEST, btnSend, 1, SpringLayout.EAST, btnLinkSend);
 		btnLinkSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				actionChooseFile(e);
+				actionChooseFile();
 			}
 		});
 		this.getContentPane().add(btnLinkSend);
@@ -157,35 +128,9 @@ public class ClientGUI extends JFrame{
 		});
 		springLayout.putConstraint(SpringLayout.NORTH, btnOnline, 0, SpringLayout.NORTH, btnSend);
 		springLayout.putConstraint(SpringLayout.EAST, btnOnline, 0, SpringLayout.EAST, scrPnlMSg);
-		getContentPane().add(btnOnline);
-
-		
-		
-	}
-
-	private void actionChooseFile(java.awt.event.ActionEvent e) {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.showDialog(this, "Select file");
-        file = fileChooser.getSelectedFile();
-        
-        if(file != null){
-            if(!file.getName().isEmpty()){
-                btnSend.setEnabled(true); String str;
-                Sender = true;
-                if(textFieldMess.getText().length() > 30){
-                    String t = file.getPath();
-                    str = t.substring(0, 20) + " [...] " + t.substring(t.length() - 20, t.length());
-                }
-                else{
-                    str = file.getPath();
-                }
-                textFieldMess.setText(str);
-            }
-        }
-    }
-	
-	
-	public void acctionChooseFile(){
+		getContentPane().add(btnOnline);	
+	}	
+	public void actionChooseFile(){
 			JFileChooser fileChooser = new JFileChooser();
 		    fileChooser.showDialog(this, "Select File");
 		    Sender=true;
@@ -197,19 +142,19 @@ public class ClientGUI extends JFrame{
 		    }
 	}
 	public void sendfile(String _filepath) {
-			        try {
-			               @SuppressWarnings("resource")
-						FileInputStream fileshare = new FileInputStream(_filepath);
-			               byte[] buffer = new byte[1024];
-		                int count;
+		try {
+			@SuppressWarnings("resource")
+			FileInputStream fileshare = new FileInputStream(_filepath);
+			byte[] buffer = new byte[1024];
+		    int count;
 			            
-			                while((count = fileshare.read(buffer)) >= 0){
-			                    output.write(buffer, 0, count);
-	                }             
-		                output.flush();
-	            } catch (IOException ex) {
-			                System.out.println("Error: Can't send");
-			            }
+			 while((count = fileshare.read(buffer)) >= 0){
+			      output.write(buffer, 0, count);
+	           }             
+		      output.flush();
+	    } catch (IOException ex) {
+			 System.out.println("Error: Can't send");
+	    }
 	}
 
 	public void send(String message) {
