@@ -7,27 +7,22 @@ public class MainClass {
 
 	public static void main(String[] args) {		
 		try {
-			final int serverPort = 6696;
-			final String serverIp = "localhost";
 			
-			//Listen other peer to chat
-			SocketPeer p = new SocketPeer();
-			p.start();
+			//Role is server to Listen other peer to chat
+			//SocketPeer p = new SocketPeer(serverPort);
+		//	p.start();
 			
+			//ROle is client
+			
+			//final int serverPort = 6696;
+		//	final String serverIp = "localhost";
+			
+//			Socket client = new Socket(serverIp, serverPort);
+//			UserStatusGUI f = new UserStatusGUI(client);
+//			f.setVisible(true);
+//			
 			UserStatusGUI f = new UserStatusGUI();
 			f.setVisible(true);
-			
-			//Send request to chat
-
-			Socket socket = new Socket(serverIp, serverPort);
-			
-			int peerPort = socket.getPort();
-			
-			//Wait for other peer connet to chat P2P
-			ServerSocket peerSocket = new ServerSocket(peerPort);
-			
-			ClientGUI window = new ClientGUI();
-			window.setVisible(true);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

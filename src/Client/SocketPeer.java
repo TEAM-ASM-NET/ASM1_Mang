@@ -9,9 +9,10 @@ import Protocol.XMLProtocol;
 
 public class SocketPeer implements Runnable{
 
-	public SocketPeer() throws Exception{
+	public SocketPeer(int port) throws Exception{
 		// TODO Auto-generated constructor stub
 		server = new ServerSocket(port);
+		this.port = port;
 	}
 	@Override
 	public void run() {
@@ -57,7 +58,7 @@ public class SocketPeer implements Runnable{
 	private Socket socket = null;
 	private ServerSocket server = null;
 	private BufferedWriter buff = null;
-	public int port = 6696;
+	public int port;
 	private Thread t = null;
 	
 }

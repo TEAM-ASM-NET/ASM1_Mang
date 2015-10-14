@@ -1,38 +1,18 @@
 package Client;
 
-
-
 import Protocol.*;
 import Server.Server;
 
 import java.io.*;
 import java.net.*;
 
-import javax.swing.JFrame;
 
+import java.awt.event.*;
 
-import javax.swing.JFileChooser;
-import javax.swing.SpringLayout;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 public class ClientGUI extends JFrame{
 
-	
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	/**
 	 * Launch the application.
@@ -150,14 +130,8 @@ public class ClientGUI extends JFrame{
 		});
 		springLayout.putConstraint(SpringLayout.NORTH, btnOnline, 0, SpringLayout.NORTH, btnSend);
 		springLayout.putConstraint(SpringLayout.EAST, btnOnline, 0, SpringLayout.EAST, scrPnlMSg);
-		getContentPane().add(btnOnline);
-
-		
-		
-	}
-
-	
-	
+		getContentPane().add(btnOnline);	
+	}	
 	public void actionChooseFile(){
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.showDialog(this, "Select File");
@@ -212,6 +186,7 @@ public class ClientGUI extends JFrame{
 	public void sendMessage()
 	{
 		addMessage(textFieldMess.getText(), "Me");
+		textFieldMess.setText("");
 		sender = new SendMessageThread(client, textFieldMess.getText());
 		sender.start();
 	}
