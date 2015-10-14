@@ -14,7 +14,7 @@ import org.xml.sax.SAXException;
 
 import Client.ClientGUI;
 import Protocol.XMLProtocol;
-public class SharedFile  extends Thread {
+public class SharedFile  implements Runnable {
 	
 	ClientGUI frame;
 	Socket socket;
@@ -22,10 +22,10 @@ public class SharedFile  extends Thread {
 	public String filename;
 	private DataInputStream input;
 	private DataOutputStream output;
+	//public boolean accept = true;
     public SharedFile(Socket socket ) {
 	// TODO Auto-generated constructor stub
     	this.socket = socket;
-    	
     }
     public void send(String message) throws IOException{
 		output.writeUTF(message);
@@ -56,6 +56,7 @@ public class SharedFile  extends Thread {
                             
                         }
                         else {
+                        	//accept=false;
                             send(new XMLProtocol().fileRequestNoAck());
                         }
                     }

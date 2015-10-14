@@ -3,6 +3,7 @@ package Client;
 
 
 import Protocol.*;
+import Server.Server;
 
 import java.io.*;
 import java.net.*;
@@ -23,7 +24,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JScrollPane;
-
 import javax.swing.JTextArea;
 
 public class ClientGUI extends JFrame{
@@ -49,6 +49,7 @@ public class ClientGUI extends JFrame{
 		client = s;
 		reciever = new RecieveMessageThread(this, s);
 		reciever.start();
+		StartShareFile(s);
 	}
 	/**
 	 * Initialize the contents of the frame.
@@ -82,9 +83,11 @@ public class ClientGUI extends JFrame{
 						send(new XMLProtocol().fileDataEnd());
 						textFieldMess.setText("");
 						txtrMsg.append("File shared success\n");
+						Sender = false;
 					}
 					else 
 					{
+						Sender = false;
 						txtrMsg.append("File is size too large\n");
 					}
 							
@@ -156,15 +159,22 @@ public class ClientGUI extends JFrame{
 	
 	
 	public void actionChooseFile(){
-			JFileChooser fileChooser = new JFileChooser();
-		    fileChooser.showDialog(this, "Select File");
-		    Sender=true;
-		    textFieldMess.setText(file.getName());
-		    filepath = file.getPath();
-		    try {
-		    	send(new XMLProtocol().fileRequest("FILE_REQ"));
-		    } catch (Exception ex) {
-		    }
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.showDialog(this, "Select File");
+	    file = fileChooser.getSelectedFile();
+	    if(file != null){
+            if(!file.getName().isEmpty()){
+            	Sender = true;
+                textFieldMess.setText(file.getName());
+                filepath = file.getPath();;
+                try {
+                	 send(new XMLProtocol().fileRequest("FILE_REQ"));
+                } catch (Exception ex) {
+                    
+                }   
+            
+            }
+	    }
 	}
 	public void sendfile(String _filepath) {
 		try {
@@ -189,7 +199,10 @@ public class ClientGUI extends JFrame{
 			       } 
 			        catch (IOException ex) {
 			        }
-		}
+	}
+	public void StartShareFile( Socket socket){
+		share = new SharedFile(socket);
+	}
 	public void addMessage(String msg, String src)
 	{
 		String message = src + ":" + msg + "\r\n";
@@ -209,7 +222,7 @@ public class ClientGUI extends JFrame{
    
     private JScrollPane scrPnlMSg;
     public JTextArea txtrMsg;
-    
+    SharedFile share;
     private SendMessageThread sender = null;
     private RecieveMessageThread reciever = null;
   //private JFrame frame;
@@ -221,6 +234,7 @@ public class ClientGUI extends JFrame{
     private static DataInputStream input;
     private static DataOutputStream output;
     private String filepath;
-    boolean Sender=false;
+    boolean Sender = false;
+
   
 }
