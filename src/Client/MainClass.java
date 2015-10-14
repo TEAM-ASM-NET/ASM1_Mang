@@ -23,6 +23,9 @@ public class MainClass {
 //			
 			UserStatusGUI f = new UserStatusGUI();
 			f.setVisible(true);
+//			ClientGUI a = new ClientGUI();
+//			a.setVisible(true);
+//			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
