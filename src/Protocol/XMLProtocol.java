@@ -10,6 +10,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import java.util.logging.*;
 
@@ -57,7 +58,7 @@ public class XMLProtocol {
 	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 	         Document doc = docBuilder.newDocument();
 	         
-	         Element login = doc.createElement("REGISTER");
+	         Element login = doc.createElement("LOGIN");
 	         doc.appendChild(login);
 	         Element user = doc.createElement("USER_NAME");
 	         user.setTextContent(userName);
@@ -174,8 +175,38 @@ public class XMLProtocol {
 	            return null;
 	    }
 	}
+	public DefaultTableModel parseString(String s) throws Exception{
+		DefaultTableModel table = new DefaultTableModel();
+		table.addColumn("username");
+		table.addColumn("pass");
+		table.addColumn("ip");
+		table.addColumn("port");
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		Document doc = docBuilder.parse(new InputSource(new StringReader(s)));
+		doc.getDocumentElement().normalize();
+		 NodeList nList = doc.getElementsByTagName("PEER");
+         for(int i = 0; i< nList.getLength(); i++){
+         	Node nNode = nList.item(i);
+         	if(nNode.getNodeType()==Node.ELEMENT_NODE)
+         	{
+         		Element eElement = (Element)nNode;
+	            	
+         		String userName = eElement.getElementsByTagName("USER_NAME").item(0).getTextContent();
+         		String pass = eElement.getElementsByTagName("PASSWORD").item(0).getTextContent();
+         		String ip = eElement.getElementsByTagName("IP").item(0).getTextContent();
+         		String port = eElement.getElementsByTagName("PORT").item(0).getTextContent();
+         		
+         		String[] data = {userName,pass,ip,port};
+         		table.addRow(data);
+         		
+         	}
+         }
+		return table;
+		
+	}
 	public String registerDeny(){
-		return "<REGISTER_DENY/>";
+		return "</REGISTER_DENY>";
 	}
 	
 	//  Tra ve danh sach cac user dang online dang XML khi register accept
@@ -216,20 +247,20 @@ public class XMLProtocol {
 	    }
 	}
 	public String loginDeny(){
-		return "<LOGIN_DENY/>";
+		return "</LOGIN_DENY>";
 	}
 	
 	/*
 	 * Chat
 	 * */
 	public String chatDeny(){
-		return "<CHAT_DENY/>";
+		return "</CHAT_DENY>";
 	}
 	public String chatAccept(){
-		return "<CHAT_ACCEPT/>";
+		return "</CHAT_ACCEPT>";
 	}
 	public String chatClose(){
-		return "<CHAT_CLOSE/>";
+		return "</CHAT_CLOSE>";
 	}
 	public String chatRequest(String userName){
 		try{
@@ -366,7 +397,7 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileRequestNoAck(){
-		return "FILE_REQ_NOACK/";
+		return "/FILE_REQ_NOACK";
 	}
 	public String fileRequestAck(String port){
 		try{
@@ -392,7 +423,7 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileDataBegin(){
-		return "<FILE_DATA_BEGIN/> ";
+		return "</FILE_DATA_BEGIN> ";
 	}
 	public String fileData(String content){
 		try{
@@ -416,6 +447,6 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileDataEnd(){
-		return "<FILE_DATA_END/>";
+		return "</FILE_DATA_END>";
 	}
 }

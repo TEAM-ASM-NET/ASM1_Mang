@@ -120,6 +120,9 @@ public class ServerThread extends Thread{
 							table.setValueAt(ip, row, 2);
 							table.setValueAt(port, row, 3);
 							sendMessage(new XMLProtocol().registerAccept(table));
+
+							//sendMessage(new XMLProtocol().listUser(table));
+
 						}
 						else sendMessage(new XMLProtocol().loginDeny());
 					}
