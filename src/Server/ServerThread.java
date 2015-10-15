@@ -109,10 +109,13 @@ public class ServerThread extends Thread{
 					else if(doc.getDocumentElement().getNodeName().equals("LOGIN")){
 						String userName = doc.getElementsByTagName("USER_NAME").item(0).getTextContent();
 						String pass = doc.getElementsByTagName("PASSWORD").item(0).getTextContent();
+						String ip = doc.getElementsByTagName("IP").item(0).getTextContent();
+						String port = doc.getElementsByTagName("PORT").item(0).getTextContent();
 						int row = checkLogin(userName,pass);
 						if(row >= 0){
-							String ip = doc.getElementsByTagName("IP").item(0).getTextContent();
-							String port = doc.getElementsByTagName("P0RT").item(0).getTextContent();
+							
+							
+							
 							table.setValueAt(ip, row, 2);
 							table.setValueAt(port, row, 3);
 							sendMessage(new XMLProtocol().listUser(table));
