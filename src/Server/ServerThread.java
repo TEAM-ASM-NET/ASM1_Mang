@@ -29,8 +29,7 @@ public class ServerThread extends Thread{
 		
 	}
 	private boolean checkUserName(String userName){
-		System.out.println("Chet");
-		System.out.println(table.getColumnCount());
+	
 		for(int i = table.getRowCount()-1; i>=0; i--)
 		{
 			if(table.getValueAt(i, 0).equals(userName))
@@ -88,18 +87,16 @@ public class ServerThread extends Thread{
 					if(doc.getDocumentElement().getNodeName().equals("REGISTER")){
 						String userName = doc.getElementsByTagName("USER_NAME").item(0).getTextContent();
 						String pass = doc.getElementsByTagName("PASSWORD").item(0).getTextContent();
-						System.out.println("v�");
 						if(checkUserName(userName)){
 							
 							String[] dataRow ={userName,pass,socket.getInetAddress().toString(),""+ID+""};
 							table.addRow(dataRow);
 							sendMessage(new XMLProtocol().registerAccept(table));
-							System.out.println("Vo if");
-							
+				
 						}
 						else{
 							sendMessage(new XMLProtocol().registerDeny());
-							System.out.println("Vo else");
+							
 						}
 					}
 					else if(doc.getDocumentElement().getNodeName().equals("PEER_KEEP_ALIVE")){
@@ -122,7 +119,6 @@ public class ServerThread extends Thread{
 							sendMessage(new XMLProtocol().registerAccept(table));
 
 							//sendMessage(new XMLProtocol().listUser(table));
-
 						}
 						else sendMessage(new XMLProtocol().loginDeny());
 					}

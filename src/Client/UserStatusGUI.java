@@ -231,11 +231,19 @@ public class UserStatusGUI extends JFrame{
 				//Recieve list user online from server
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
-				//Add user to Jlist
-				boolean resultLogin = User2List(lstUser);
 				
-				if (resultLogin){
-					btnLogin.setEnabled(false);
+				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
+					table = protocol.parseString(lstUser);
+					DefaultListModel<String> tmp = new DefaultListModel<String>();
+					
+					list.setModel(tmp);
+					
+					for (int i = 0; i < table.getRowCount(); i++){
+						tmp.addElement(table.getValueAt(i, 0).toString());
+					}
+					
+					
+					//btnLogin.setEnabled(false);
 		    		btnRegister.setEnabled(false);
 		    		list.setEnabled(true);
 		    		txtHostname.setEnabled(false);
@@ -244,6 +252,7 @@ public class UserStatusGUI extends JFrame{
 		    		txtusername.setEnabled(false);
 		    		pwdTxtpass.setEnabled(false);
 				}
+			
 			}
 			catch(Exception e){
 				System.out.println("kkkkk"+e.getMessage());
@@ -255,50 +264,6 @@ public class UserStatusGUI extends JFrame{
 	}
 	
 	private void Register(){
-		
-	}
-	private boolean User2List(String lstUser) throws ParserConfigurationException, SAXException, IOException{
-		//Analys XML to list user
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        
-		Document doc = docBuilder.parse(lstUser);
-        doc.getDocumentElement().normalize();
-        XMLProtocol protocol = new XMLProtocol();
-        if (!doc.toString().equals(protocol.loginDeny())|| !doc.toString().equals(protocol.registerDeny())){
-        	NodeList nList = doc.getElementsByTagName("PEER");
-    		
-    		javax.swing.DefaultListModel<String> tmpListModel = new javax.swing.DefaultListModel<String>();
-    		list.setModel(tmpListModel);
-    		
-            for(int i = 0; i< nList.getLength(); i++){
-            	Node nNode = nList.item(i);
-            	if(nNode.getNodeType()==Node.ELEMENT_NODE)
-            	{
-            		Element eElement = (Element)nNode;
-                	
-            		String userName = eElement.getElementsByTagName("USER_NAME").item(0).getTextContent();
-            		String userIp = eElement.getElementsByTagName("IP").item(0).getTextContent();
-            		String userPort = eElement.getElementsByTagName("PORT").item(0).getTextContent();
-            		
-            		String[] data = {userName, userIp, userPort};
-            		table.addRow(data);	
-            		tmpListModel.addElement(data[0]);
-            	}
-            }
-            btnLogin.setEnabled(false);
-    		btnRegister.setEnabled(false);
-    		list.setEnabled(true);
-    		txtHostname.setEnabled(false);
-    		txthostport.setEnabled(false);
-    		btnConnect.setEnabled(false);
-    		txtusername.setEnabled(false);
-    		pwdTxtpass.setEnabled(false);
-    		return true;
-        }  else {
-        	JOptionPane.showMessageDialog(null, "Server denys login/register. Check username or password");
-        	return false;
-        }
 		
 	}
 	

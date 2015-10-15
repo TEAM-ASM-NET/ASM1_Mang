@@ -16,12 +16,15 @@ public class RecieveMessageThread implements Runnable{
 	public void run(){
 		try{
 			while (true){
-				recieve = new BufferedReader(new InputStreamReader(socket.getInputStream()));//get inputstream
+				//recieve = new BufferedReader(new InputStreamReader(socket.getInputStream()));//get inputstream
+				recieve = new DataInputStream(socket.getInputStream());
 				String msgRecieved = null;
-				while((msgRecieved = recieve.readLine())!= null)
+				while((msgRecieved = recieve.readUTF())!= null)
 				{
+					System.out.println("Tn nhan: " + msgRecieved);
 					String msg = protocol.XMLToMessage(msgRecieved);
 					frm.addMessage(msg, socket.getInetAddress().getHostAddress());
+					System.out.println("Tn nhan: " + msg);
 				}
 			}
 		}
@@ -42,7 +45,7 @@ public class RecieveMessageThread implements Runnable{
 			t.start();
 		}
 	}
-	BufferedReader recieve = null;
+	DataInputStream recieve = null;
 	XMLProtocol protocol = null;
 	ClientGUI frm = null;
 	Socket socket = null;
