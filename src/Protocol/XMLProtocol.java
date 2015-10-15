@@ -2,6 +2,7 @@ package Protocol;
 
 import java.io.*;
 
+import javax.management.modelmbean.XMLParseException;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
@@ -155,23 +156,25 @@ public class XMLProtocol {
 	        	 list.appendChild(peer);
 	        	 Element user = doc.createElement("USER_NAME");
 	        	 user.setTextContent(table.getValueAt(i, 0).toString());
-	        	 list.appendChild(user);
+	        	 peer.appendChild(user);
 	        	 Element ip = doc.createElement("IP");
 	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
-	        	 list.appendChild(ip);
+	        	 peer.appendChild(ip);
 	        	 Element port = doc.createElement("PORT");
 	        	 port.setTextContent(table.getValueAt(i, 3).toString());
-	        	 list.appendChild(port);
+	        	 peer.appendChild(port);
 	         }
 	         
 	         return documentToString(doc);
 		}
 		catch(ParserConfigurationException | DOMException ex) {
+			System.out.println("Loi xml2: " + ex.getMessage());
 	            ex.printStackTrace();
 	            return null;
 	     } 
 		catch (Exception ex) {
 	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            System.out.println("Loi xml: " + ex.getMessage());
 	            return null;
 	    }
 	}
@@ -186,22 +189,26 @@ public class XMLProtocol {
 		Document doc = docBuilder.parse(new InputSource(new StringReader(s)));
 		doc.getDocumentElement().normalize();
 		 NodeList nList = doc.getElementsByTagName("PEER");
+		 System.out.println("trong protocol");
          for(int i = 0; i< nList.getLength(); i++){
          	Node nNode = nList.item(i);
+         	
          	if(nNode.getNodeType()==Node.ELEMENT_NODE)
          	{
+         		System.out.println("trong protocol");
          		Element eElement = (Element)nNode;
-	            	
+         		System.out.println("trong protocol e" + s);
          		String userName = eElement.getElementsByTagName("USER_NAME").item(0).getTextContent();
-         		String pass = eElement.getElementsByTagName("PASSWORD").item(0).getTextContent();
+         		String pass = "";
          		String ip = eElement.getElementsByTagName("IP").item(0).getTextContent();
          		String port = eElement.getElementsByTagName("PORT").item(0).getTextContent();
          		
          		String[] data = {userName,pass,ip,port};
+         		System.out.println("trong protocol e");
          		table.addRow(data);
          		
          	}
-         }
+         }System.out.println("trong protocol");
 		return table;
 		
 	}
@@ -226,13 +233,13 @@ public class XMLProtocol {
 	        	 list.appendChild(peer);
 	        	 Element user = doc.createElement("USER_NAME");
 	        	 user.setTextContent(table.getValueAt(i, 0).toString());
-	        	 list.appendChild(user);
+	        	 peer.appendChild(user);
 	        	 Element ip = doc.createElement("IP");
 	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
-	        	 list.appendChild(ip);
+	        	 peer.appendChild(ip);
 	        	 Element port = doc.createElement("PORT");
 	        	 port.setTextContent(table.getValueAt(i, 3).toString());
-	        	 list.appendChild(port);
+	        	 peer.appendChild(port);
 	         }
 	         
 	         return documentToString(doc);

@@ -24,7 +24,7 @@ public class RecieveMessageThread implements Runnable{
 					System.out.println("Tn nhan: " + msgRecieved);
 					String msg = protocol.XMLToMessage(msgRecieved);
 					frm.addMessage(msg, socket.getInetAddress().getHostAddress());
-					System.out.println("Tn nhan: " + msg);
+					//System.out.println("Tn nhan: " + msg);
 				}
 			}
 		}
