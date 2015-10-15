@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.net.*;
+import java.sql.DataTruncation;
 import java.io.*;
 import javax.swing.table.*;
 import javax.xml.parsers.DocumentBuilder;
@@ -29,7 +30,7 @@ public class UserStatusGUI extends JFrame{
 	private JTextField txtusername;
 	private JPasswordField pwdTxtpass;
 	public UserStatusGUI() {
-		setSize(new Dimension(559, 346));
+		setSize(new Dimension(378, 346));
 		setTitle("Start form");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		//socket = s;
@@ -39,7 +40,8 @@ public class UserStatusGUI extends JFrame{
 	private void Initially(){
 		
 		table = new DefaultTableModel();
-		table.addColumn("username");		
+		table.addColumn("username");
+		table.addColumn("password");
 		table.addColumn("ip");
 		table.addColumn("port");
 		
@@ -105,6 +107,7 @@ public class UserStatusGUI extends JFrame{
 						
 						btnLogin.setEnabled(true);
 						btnRegister.setEnabled(true);
+						btnLogout.setEnabled(false);
 						list.setEnabled(true);
 						txtHostname.setEditable(false);
 						txthostport.setEnabled(false);
@@ -161,22 +164,22 @@ public class UserStatusGUI extends JFrame{
 		list = new JList<String>();
 		list.setSize(new Dimension(106, 142));
 		list.setEnabled(false);
-		scrollPane.setColumnHeaderView(list);
+		scrollPane.setViewportView(list);
 		
 		
 		btnClose = new JButton("Close");
+		springLayout.putConstraint(SpringLayout.WEST, btnClose, 0, SpringLayout.WEST, lblHostName);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnClose, 77, SpringLayout.SOUTH, btnLogin);
+		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnConnect);
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
-		springLayout.putConstraint(SpringLayout.NORTH, btnClose, 19, SpringLayout.SOUTH, btnLogin);
-		springLayout.putConstraint(SpringLayout.WEST, btnClose, 0, SpringLayout.WEST, lblHostName);
-		springLayout.putConstraint(SpringLayout.SOUTH, btnClose, 42, SpringLayout.SOUTH, btnLogin);
-		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnConnect);
 		getContentPane().add(btnClose);
 		
 		JButton btnStartChat = new JButton("Start Chat");
+		springLayout.putConstraint(SpringLayout.NORTH, btnClose, 0, SpringLayout.NORTH, btnStartChat);
 		springLayout.putConstraint(SpringLayout.NORTH, btnStartChat, 6, SpringLayout.SOUTH, scrollPane);
 		springLayout.putConstraint(SpringLayout.WEST, btnStartChat, 229, SpringLayout.WEST, getContentPane());
 		btnStartChat.addActionListener(new ActionListener() {
@@ -187,28 +190,28 @@ public class UserStatusGUI extends JFrame{
 						String ip = table.getValueAt(index, 1).toString();
 						String port = table.getValueAt(index, 2).toString();
 						//String username = table.getValueAt(index, 0).toString();
+						//Chat to client, that client is server
+						Socket s = new Socket(ip,  Integer.parseInt(port));
 						
-						
-						EventQueue.invokeLater(new Runnable() {
-							public void run() {
-								try {
-									
-									Socket peerServer = new Socket(ip, Integer.parseInt(port));
-									ClientGUI newChat = new ClientGUI();
-									newChat.connect(peerServer);
-									newChat.username = txtusername.getText();
-									
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-						});
+						ClientChatThread frm = new ClientChatThread(s);
 						
 					}catch(Exception e){}
 				}
 			}
 		});
 		getContentPane().add(btnStartChat);
+		
+		btnLogout = new JButton("Logout");
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Logout();
+			}
+		});
+		btnLogout.setEnabled(false);
+		springLayout.putConstraint(SpringLayout.WEST, btnLogout, 0, SpringLayout.WEST, lblHostName);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnLogout, -15, SpringLayout.NORTH, btnClose);
+		springLayout.putConstraint(SpringLayout.EAST, btnLogout, 0, SpringLayout.EAST, btnConnect);
+		getContentPane().add(btnLogout);
 
 	}
 	private void LoginOrResgister(boolean isLogin){
@@ -234,8 +237,8 @@ public class UserStatusGUI extends JFrame{
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
 				System.out.println("tr ve "+lstUser);
-				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
-					table = protocol.parseString(lstUser);JOptionPane.showMessageDialog(null, "tren cung");
+				if (!lstUser.equals(protocol.registerDeny()) || !lstUser.equals(protocol.loginDeny())){
+					table = protocol.parseString(lstUser);
 					DefaultListModel<String> tmp = new DefaultListModel<String>();
 					
 					
@@ -249,10 +252,13 @@ public class UserStatusGUI extends JFrame{
 					
 					//btnLogin.setEnabled(false);
 		    		btnRegister.setEnabled(false);
+		    		btnLogin.setEnabled(false);
+		    		btnLogout.setEnabled(true);
+		    		btnConnect.setEnabled(false);
 		    		list.setEnabled(true);
+		    		
 		    		txtHostname.setEnabled(false);
 		    		txthostport.setEnabled(false);
-		    		btnConnect.setEnabled(false);
 		    		txtusername.setEnabled(false);
 		    		pwdTxtpass.setEnabled(false);
 				}
@@ -272,13 +278,39 @@ public class UserStatusGUI extends JFrame{
 	private void Register(){
 		
 	}
-	
+	private void Logout(){
+		try{
+			
+			XMLProtocol protocol = new XMLProtocol();
+			String stt = protocol.logOut(username, "OFFLINE");
+			DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+			dout.writeUTF(stt);
+			dout.flush();
+			
+		}catch (IOException e){
+			System.out.println(e.getMessage());
+		}
+		
+		btnConnect.setEnabled(false);
+		btnLogin.setEnabled(true);
+		btnLogout.setEnabled(false);
+		btnRegister.setEnabled(true);
+		
+		txtusername.setEnabled(true);
+		pwdTxtpass.setEnabled(true);
+		
+		//Delete old list user online
+		DefaultListModel<String> tb = (DefaultListModel<String>) list.getModel();
+		tb.removeAllElements();
+		
+	}
 	JButton btnClose;
 	JList<String> list;
 	JScrollPane scrollPane;
 	JButton btnLogin;
 	JButton btnRegister;
 	JButton btnConnect;
+	JButton btnLogout;
 	
 	Socket socket = null;
 	public String username;

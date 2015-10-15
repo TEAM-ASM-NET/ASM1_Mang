@@ -97,4 +97,19 @@ public class SharedFile  extends Thread {
 		}
 	
 	}
+	public void sendfile(String _filepath) {
+		try {
+			@SuppressWarnings("resource")
+			FileInputStream fileshare = new FileInputStream(_filepath);
+			byte[] buffer = new byte[1024];
+		    int count;
+			            
+			 while((count = fileshare.read(buffer)) >= 0){
+			      output.write(buffer, 0, count);
+	           }             
+		      output.flush();
+	    } catch (IOException ex) {
+			 System.out.println("Error: Can't send");
+	    }
+	}
 }

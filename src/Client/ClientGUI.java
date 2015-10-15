@@ -59,7 +59,7 @@ public class ClientGUI extends JFrame{
 					if (size<150*1024*1024)
 					{
 						send( new XMLProtocol().fileDataBegin());
-						sendfile(filepath);
+						//sendfile(filepath);
 						send(new XMLProtocol().fileDataEnd());
 						textFieldMess.setText("");
 						txtrMsg.append("File shared success\n");
@@ -141,21 +141,7 @@ public class ClientGUI extends JFrame{
 		    } catch (Exception ex) {
 		    }
 	}
-	public void sendfile(String _filepath) {
-		try {
-			@SuppressWarnings("resource")
-			FileInputStream fileshare = new FileInputStream(_filepath);
-			byte[] buffer = new byte[1024];
-		    int count;
-			            
-			 while((count = fileshare.read(buffer)) >= 0){
-			      output.write(buffer, 0, count);
-	           }             
-		      output.flush();
-	    } catch (IOException ex) {
-			 System.out.println("Error: Can't send");
-	    }
-	}
+	
 
 	public void send(String message) {
 			       try {
