@@ -44,9 +44,9 @@ public class SharedFile  extends Thread {
 			while(true)
 			{
 				
-				
-				String message = input.readUTF();
 				System.out.print("Loi");
+				String message = input.readUTF();
+				
 				//if(message!=null){
 					
 					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));

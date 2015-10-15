@@ -29,7 +29,7 @@ public class UserStatusGUI extends JFrame{
 	private JTextField txtusername;
 	private JPasswordField pwdTxtpass;
 	public UserStatusGUI() {
-		setSize(new Dimension(500, 320));
+		setSize(new Dimension(559, 346));
 		setTitle("Start form");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		//socket = s;
@@ -39,8 +39,7 @@ public class UserStatusGUI extends JFrame{
 	private void Initially(){
 		
 		table = new DefaultTableModel();
-		table.addColumn("username");
-		
+		table.addColumn("username");		
 		table.addColumn("ip");
 		table.addColumn("port");
 		
@@ -54,7 +53,7 @@ public class UserStatusGUI extends JFrame{
 		getContentPane().add(lblHostName);
 		
 		txtHostname = new JTextField();
-		txtHostname.setText("192.168.56.1");
+		txtHostname.setText("localhost");
 		springLayout.putConstraint(SpringLayout.NORTH, txtHostname, -3, SpringLayout.NORTH, lblHostName);
 		springLayout.putConstraint(SpringLayout.WEST, txtHostname, 6, SpringLayout.EAST, lblHostName);
 		getContentPane().add(txtHostname);
@@ -83,6 +82,7 @@ public class UserStatusGUI extends JFrame{
 		getContentPane().add(lblPassword);
 		
 		txtusername = new JTextField();
+		txtusername.setText("gg");
 		txtusername.setEnabled(false);
 		springLayout.putConstraint(SpringLayout.WEST, txtusername, 0, SpringLayout.WEST, txtHostname);
 		springLayout.putConstraint(SpringLayout.SOUTH, txtusername, 0, SpringLayout.SOUTH, lblUserName);
@@ -95,7 +95,7 @@ public class UserStatusGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.WEST, pwdTxtpass, 0, SpringLayout.WEST, txthostport);
 		springLayout.putConstraint(SpringLayout.EAST, pwdTxtpass, 0, SpringLayout.EAST, txthostport);
 		getContentPane().add(pwdTxtpass);
-		
+		pwdTxtpass.setText("c");
 		btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -112,7 +112,9 @@ public class UserStatusGUI extends JFrame{
 						txtusername.setEnabled(true);
 						pwdTxtpass.setEnabled(true);
 											
-					}catch (Exception e){}
+					}catch (Exception e){
+						JOptionPane.showMessageDialog(null, "Not find server");
+					}
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "Not find server");
@@ -149,11 +151,11 @@ public class UserStatusGUI extends JFrame{
 		getContentPane().add(btnLogin);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setSize(new Dimension(106, 142));
-		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 13, SpringLayout.SOUTH, lblPassword);
-		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 39, SpringLayout.EAST, btnConnect);
-		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -45, SpringLayout.SOUTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, -213, SpringLayout.SOUTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, scrollPane, -106, SpringLayout.EAST, txthostport);
 		springLayout.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, txthostport);
+		scrollPane.setSize(new Dimension(106, 142));
+		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -45, SpringLayout.SOUTH, getContentPane());
 		getContentPane().add(scrollPane);
 		
 		list = new JList<String>();
@@ -175,6 +177,8 @@ public class UserStatusGUI extends JFrame{
 		getContentPane().add(btnClose);
 		
 		JButton btnStartChat = new JButton("Start Chat");
+		springLayout.putConstraint(SpringLayout.NORTH, btnStartChat, 6, SpringLayout.SOUTH, scrollPane);
+		springLayout.putConstraint(SpringLayout.WEST, btnStartChat, 229, SpringLayout.WEST, getContentPane());
 		btnStartChat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!list.isSelectionEmpty()){
@@ -204,8 +208,6 @@ public class UserStatusGUI extends JFrame{
 				}
 			}
 		});
-		springLayout.putConstraint(SpringLayout.NORTH, btnStartChat, 6, SpringLayout.SOUTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.EAST, btnStartChat, -10, SpringLayout.EAST, scrollPane);
 		getContentPane().add(btnStartChat);
 
 	}
@@ -231,17 +233,19 @@ public class UserStatusGUI extends JFrame{
 				//Recieve list user online from server
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
-				
+				System.out.println("tr ve "+lstUser);
 				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
-					table = protocol.parseString(lstUser);
+					table = protocol.parseString(lstUser);JOptionPane.showMessageDialog(null, "tren cung");
 					DefaultListModel<String> tmp = new DefaultListModel<String>();
+					
 					
 					list.setModel(tmp);
 					
 					for (int i = 0; i < table.getRowCount(); i++){
 						tmp.addElement(table.getValueAt(i, 0).toString());
 					}
-					
+					JOptionPane.showMessageDialog(null, "message ok "  + lstUser);
+						
 					
 					//btnLogin.setEnabled(false);
 		    		btnRegister.setEnabled(false);
@@ -252,10 +256,12 @@ public class UserStatusGUI extends JFrame{
 		    		txtusername.setEnabled(false);
 		    		pwdTxtpass.setEnabled(false);
 				}
+				else 
+					JOptionPane.showMessageDialog(this, lstUser + "Register/Login fail. Check your username or password");
 			
 			}
 			catch(Exception e){
-				System.out.println("kkkkk"+e.getMessage());
+				System.out.println("kkkkk"+e.getMessage() + " vv " + e.getCause());
 			}
 		}
 		else {

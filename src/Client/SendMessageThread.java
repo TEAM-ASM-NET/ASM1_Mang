@@ -26,7 +26,7 @@ public class SendMessageThread extends Thread{
 				sender.writeUTF(send + "\n");
 				sender.flush();
 			//}
-				System.out.println("Tin nhan send: " + send);
+				//System.out.println("Tin nhan send: " + send);
 		}catch (Exception e){
 			
 		}
