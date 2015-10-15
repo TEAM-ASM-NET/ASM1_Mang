@@ -20,63 +20,49 @@ public class SharedFile  extends Thread {
 	ClientGUI frame;
 	Socket socket;
 	boolean running = true;
-	public String filename;
+	boolean check =false;
+	XMLProtocol protocol;
 	private DataInputStream input;
 	private ObjectOutputStream output;
 	//public boolean accept = true;
     public SharedFile(Socket socket )  {
 	// TODO Auto-generated constructor stub
     	this.socket=socket;
+    	protocol = new XMLProtocol();
     }
  
 	@Override
 	public void run() {
 		// TODO Auto-generated method stud
-		
+		int choise = 0;
 		try{
 			output = new ObjectOutputStream(socket.getOutputStream());
-	        output.flush();
+	        //output.flush();
+	       // input = new DataInputStream(socket.getInputStream());
 	        
-	        input = new DataInputStream(socket.getInputStream());
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			while(true)
-			{
+				System.out.print("Lối");
 				
-				System.out.print("Loi");
-				String message = input.readUTF();
 				
-				//if(message!=null){
-					
-					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
-					doc.getDocumentElement().normalize();
-					
-				if(doc.getDocumentElement().getNodeName().equals("FILE_REQ")) {
-                    filename = doc.getDocumentElement().getFirstChild().getTextContent();
-                    int choise = JOptionPane.showConfirmDialog(null, frame.username + " want to send " + filename + " to you?", "Message",
+				if(frame.Sender) {
+					System.out.print("Lối2");
+					choise = JOptionPane.showConfirmDialog(null, frame.username + " want to send " + frame.filepath + " to you?", "Message",
 					        JOptionPane.YES_NO_OPTION);
                     if(choise == JOptionPane.YES_OPTION) {
-                    	
-                        send(new XMLProtocol().fileRequestAck("FILE_REQ_ACK"));
-                        
+                    	send(protocol.fileRequest("FILE_REQ_ACK"));
                     }
                     else {
-                        send(new XMLProtocol().fileRequestNoAck());
+                    	JOptionPane.showMessageDialog(null, frame.username + " dosen't accept");
+                        frame.textFieldMess.setText("");
+                        send(protocol.fileRequestNoAck());
                     }
                 }
-                else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_ACK")) {
+                if(check) {
                     JOptionPane.showMessageDialog(null, frame.username + " accept");
-                }
-                else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_NOACK")) {
-                    JOptionPane.showMessageDialog(null, frame.username + " dosen't accept");
-                   frame.textFieldMess.setText("");
-                }
-                else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_BEGIN")) {
                     System.out.println("Ingoing : file");
                     String saveTo = "";
                     JFileChooser jf = new JFileChooser();
-                    jf.setSelectedFile(new File(filename));
+                    jf.setSelectedFile(new File(frame.filepath));
                     int returnVal = jf.showSaveDialog(frame);
                     saveTo = jf.getSelectedFile().getPath();
                     @SuppressWarnings("resource")
@@ -89,15 +75,16 @@ public class SharedFile  extends Thread {
                         }
                         Out.flush();
                     }
-                }
-                else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_END")) {
+                    check=false;
+                }   
+              if(choise==JOptionPane.YES_OPTION) {
                 	frame.textFieldMess.setText("");
                     frame.txtrMsg.append("Ban da nhan duoc mot file tu" + frame.username);
                 }
-				//}
 			}
-		}catch (Exception e){
 			
+		catch (Exception e){
+			running =false;
 		}
 		
 	}
@@ -122,6 +109,7 @@ public class SharedFile  extends Thread {
 			      output.write(buffer, 0, count);
 	           }             
 		      output.flush();
+		      check=true;
 	    } catch (IOException ex) {
 			 System.out.println("Error: Can't send");
 	    }

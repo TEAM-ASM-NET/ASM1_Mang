@@ -34,10 +34,7 @@ public class ClientGUI extends JFrame{
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	public ClientGUI(DataOutputStream out) {
-		   
-		   output = out;
-	 }
+	
 	private void initialize() {
 		//frame = new JFrame();
 		this.setBounds(100, 100, 434, 300);
@@ -179,13 +176,13 @@ public class ClientGUI extends JFrame{
   //private JFrame frame;
   	public Socket client;
     //public int port;
-    public String username;
+    public String username = "";
   //  public Thread clientThread;
     public File file;
     private static DataInputStream input;
     private static DataOutputStream output;
-    private String filepath;
-    boolean Sender = false;
+    public String filepath;
+    public boolean Sender = false;
 
   
 }
