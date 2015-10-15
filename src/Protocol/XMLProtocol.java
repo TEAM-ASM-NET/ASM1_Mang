@@ -152,17 +152,19 @@ public class XMLProtocol {
 	         
 	         for(int i = table.getRowCount() - 1; i>=0; i--)
 	         {
-	        	 Element peer = doc.createElement("PEER");
-	        	 list.appendChild(peer);
-	        	 Element user = doc.createElement("USER_NAME");
-	        	 user.setTextContent(table.getValueAt(i, 0).toString());
-	        	 peer.appendChild(user);
-	        	 Element ip = doc.createElement("IP");
-	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
-	        	 peer.appendChild(ip);
-	        	 Element port = doc.createElement("PORT");
-	        	 port.setTextContent(table.getValueAt(i, 3).toString());
-	        	 peer.appendChild(port);
+	        	 if(table.getValueAt(i, 2) != ""){
+		        	 Element peer = doc.createElement("PEER");
+		        	 list.appendChild(peer);
+		        	 Element user = doc.createElement("USER_NAME");
+		        	 user.setTextContent(table.getValueAt(i, 0).toString());
+		        	 peer.appendChild(user);
+		        	 Element ip = doc.createElement("IP");
+		        	 ip.setTextContent(table.getValueAt(i, 2).toString());
+		        	 peer.appendChild(ip);
+		        	 Element port = doc.createElement("PORT");
+		        	 port.setTextContent(table.getValueAt(i, 3).toString());
+		        	 peer.appendChild(port);
+	        	 }
 	         }
 	         
 	         return documentToString(doc);
@@ -188,8 +190,9 @@ public class XMLProtocol {
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document doc = docBuilder.parse(new InputSource(new StringReader(s)));
 		doc.getDocumentElement().normalize();
+		System.out.println(doc.toString());
 		 NodeList nList = doc.getElementsByTagName("PEER");
-		 System.out.println("trong protocol");
+		 
          for(int i = 0; i< nList.getLength(); i++){
          	Node nNode = nList.item(i);
          	
@@ -229,17 +232,19 @@ public class XMLProtocol {
 	         
 	         for(int i = table.getRowCount() - 1; i>=0; i--)
 	         {
-	        	 Element peer = doc.createElement("PEER");
-	        	 list.appendChild(peer);
-	        	 Element user = doc.createElement("USER_NAME");
-	        	 user.setTextContent(table.getValueAt(i, 0).toString());
-	        	 peer.appendChild(user);
-	        	 Element ip = doc.createElement("IP");
-	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
-	        	 peer.appendChild(ip);
-	        	 Element port = doc.createElement("PORT");
-	        	 port.setTextContent(table.getValueAt(i, 3).toString());
-	        	 peer.appendChild(port);
+	        	 if(table.getValueAt(i, 2) != ""){
+		        	 Element peer = doc.createElement("PEER");
+		        	 list.appendChild(peer);
+		        	 Element user = doc.createElement("USER_NAME");
+		        	 user.setTextContent(table.getValueAt(i, 0).toString());
+		        	 peer.appendChild(user);
+		        	 Element ip = doc.createElement("IP");
+		        	 ip.setTextContent(table.getValueAt(i, 2).toString());
+		        	 peer.appendChild(ip);
+		        	 Element port = doc.createElement("PORT");
+		        	 port.setTextContent(table.getValueAt(i, 3).toString());
+		        	 peer.appendChild(port);
+	        	 }
 	         }
 	         
 	         return documentToString(doc);

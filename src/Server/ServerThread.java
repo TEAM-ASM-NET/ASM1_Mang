@@ -61,7 +61,8 @@ public class ServerThread extends Thread{
 		{
 			if(table.getValueAt(i, 0).equals(userName))
 			{	
-				table.removeRow(i);
+				table.setValueAt("", i, 2);
+				table.setValueAt("", i, 3);
 				break;
 			}
 		}
@@ -104,7 +105,7 @@ public class ServerThread extends Thread{
 							this.close();
 							this.stop();
 						}
-						else sendMessage(new XMLProtocol().registerAccept(table));
+						else sendMessage(new XMLProtocol().listUser(table));
 					}
 					else if(doc.getDocumentElement().getNodeName().equals("LOGIN")){
 						String userName = doc.getElementsByTagName("USER_NAME").item(0).getTextContent();
