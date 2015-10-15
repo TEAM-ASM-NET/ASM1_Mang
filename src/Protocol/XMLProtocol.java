@@ -152,19 +152,17 @@ public class XMLProtocol {
 	         
 	         for(int i = table.getRowCount() - 1; i>=0; i--)
 	         {
-	        	 if(table.getValueAt(i, 2) != ""){
-		        	 Element peer = doc.createElement("PEER");
-		        	 list.appendChild(peer);
-		        	 Element user = doc.createElement("USER_NAME");
-		        	 user.setTextContent(table.getValueAt(i, 0).toString());
-		        	 peer.appendChild(user);
-		        	 Element ip = doc.createElement("IP");
-		        	 ip.setTextContent(table.getValueAt(i, 2).toString());
-		        	 peer.appendChild(ip);
-		        	 Element port = doc.createElement("PORT");
-		        	 port.setTextContent(table.getValueAt(i, 3).toString());
-		        	 peer.appendChild(port);
-	        	 }
+	        	 Element peer = doc.createElement("PEER");
+	        	 list.appendChild(peer);
+	        	 Element user = doc.createElement("USER_NAME");
+	        	 user.setTextContent(table.getValueAt(i, 0).toString());
+	        	 peer.appendChild(user);
+	        	 Element ip = doc.createElement("IP");
+	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
+	        	 peer.appendChild(ip);
+	        	 Element port = doc.createElement("PORT");
+	        	 port.setTextContent(table.getValueAt(i, 3).toString());
+	        	 peer.appendChild(port);
 	         }
 	         
 	         return documentToString(doc);
@@ -190,9 +188,8 @@ public class XMLProtocol {
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		Document doc = docBuilder.parse(new InputSource(new StringReader(s)));
 		doc.getDocumentElement().normalize();
-		System.out.println(doc.toString());
 		 NodeList nList = doc.getElementsByTagName("PEER");
-		 
+		 System.out.println("trong protocol");
          for(int i = 0; i< nList.getLength(); i++){
          	Node nNode = nList.item(i);
          	
@@ -232,19 +229,17 @@ public class XMLProtocol {
 	         
 	         for(int i = table.getRowCount() - 1; i>=0; i--)
 	         {
-	        	 if(table.getValueAt(i, 2) != ""){
-		        	 Element peer = doc.createElement("PEER");
-		        	 list.appendChild(peer);
-		        	 Element user = doc.createElement("USER_NAME");
-		        	 user.setTextContent(table.getValueAt(i, 0).toString());
-		        	 peer.appendChild(user);
-		        	 Element ip = doc.createElement("IP");
-		        	 ip.setTextContent(table.getValueAt(i, 2).toString());
-		        	 peer.appendChild(ip);
-		        	 Element port = doc.createElement("PORT");
-		        	 port.setTextContent(table.getValueAt(i, 3).toString());
-		        	 peer.appendChild(port);
-	        	 }
+	        	 Element peer = doc.createElement("PEER");
+	        	 list.appendChild(peer);
+	        	 Element user = doc.createElement("USER_NAME");
+	        	 user.setTextContent(table.getValueAt(i, 0).toString());
+	        	 peer.appendChild(user);
+	        	 Element ip = doc.createElement("IP");
+	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
+	        	 peer.appendChild(ip);
+	        	 Element port = doc.createElement("PORT");
+	        	 port.setTextContent(table.getValueAt(i, 3).toString());
+	        	 peer.appendChild(port);
 	         }
 	         
 	         return documentToString(doc);
@@ -259,20 +254,88 @@ public class XMLProtocol {
 	    }
 	}
 	public String loginDeny(){
-		return "</LOGIN_DENY>";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("LOGIN_DENY");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 	
 	/*
 	 * Chat
 	 * */
 	public String chatDeny(){
-		return "</CHAT_DENY>";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("CHAT_DENY");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 	public String chatAccept(){
-		return "</CHAT_ACCEPT>";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("CHAT_ACCEPT");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 	public String chatClose(){
-		return "</CHAT_CLOSE>";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("CHAT_CLOSE");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 	public String chatRequest(String userName){
 		try{
@@ -408,7 +471,24 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileRequestNoAck(){
-		return "/FILE_REQ_NOACK";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("FILE_REQ_NOACK");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 	public String fileRequestAck(String port){
 		try{
@@ -434,7 +514,24 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileDataBegin(){
-		return "</FILE_DATA_BEGIN> ";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("FILE_DATA_BEGIN");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 	public String fileData(String content){
 		try{
@@ -458,6 +555,23 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileDataEnd(){
-		return "</FILE_DATA_END>";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("FILE_DATA_END");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 }

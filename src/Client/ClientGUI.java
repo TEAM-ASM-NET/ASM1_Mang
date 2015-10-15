@@ -25,19 +25,16 @@ public class ClientGUI extends JFrame{
 		
 	}
 	public void connect(Socket s) throws IOException{
-		client = s;
-		reciever = new RecieveMessageThread(this, s);
-		reciever.start();
+//		client = s;
+//		reciever = new RecieveMessageThread(this, s);
+//		reciever.start();
         StartShareFile(s);
 		
 	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	public ClientGUI(DataOutputStream out) {
-		   
-		   output = out;
-	 }
+	
 	private void initialize() {
 		//frame = new JFrame();
 		this.setBounds(100, 100, 434, 300);
@@ -56,20 +53,23 @@ public class ClientGUI extends JFrame{
 				if (Sender)
 				{
 					long size = file.length();
+					System.out.print(size);
 					if (size<150*1024*1024)
 					{
+						share.send(new XMLProtocol().fileRequest(file.getName()));
+						
 						share.send( new XMLProtocol().fileDataBegin());
 						share.sendfile(filepath);
 						share.send(new XMLProtocol().fileDataEnd());
 						textFieldMess.setText("");
-						txtrMsg.append("File shared success\n");
+						//txtrMsg.append("File shared success\n");
 						Sender = false;
 					}
 					else 
 					{
 						Sender = false;
 						textFieldMess.setText("");
-						txtrMsg.append("File is size too large\n");
+						//txtrMsg.append("File is size too large\n");
 					}
 							
 				}
@@ -142,8 +142,7 @@ public class ClientGUI extends JFrame{
             	Sender = true;
                 textFieldMess.setText(file.getName());
                 filepath = file.getPath();;   
-                share.send(new XMLProtocol().fileRequest("FILE_REQ"));
-   
+                
             }
 	    }
 	}
@@ -179,13 +178,13 @@ public class ClientGUI extends JFrame{
   //private JFrame frame;
   	public Socket client;
     //public int port;
-    public String username;
+    public String username = null;
   //  public Thread clientThread;
     public File file;
     private static DataInputStream input;
     private static DataOutputStream output;
-    private String filepath;
-    boolean Sender = false;
+    public String filepath;
+    public boolean Sender = false;
 
   
 }
