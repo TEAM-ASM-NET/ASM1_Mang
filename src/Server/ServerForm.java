@@ -93,6 +93,7 @@ public class ServerForm extends JFrame{
 		frame.getContentPane().add(lblDatafile);
 		
 		txtFile = new JTextField();
+		txtFile.setEditable(false);
 		springLayout.putConstraint(SpringLayout.NORTH, txtFile, 0, SpringLayout.NORTH, lblDatafile);
 		springLayout.putConstraint(SpringLayout.WEST, txtFile, 6, SpringLayout.EAST, lblDatafile);
 		springLayout.putConstraint(SpringLayout.EAST, txtFile, 0, SpringLayout.EAST, lblServer);

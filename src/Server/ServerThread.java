@@ -29,7 +29,7 @@ public class ServerThread extends Thread{
 		
 	}
 	private boolean checkUserName(String userName){
-		
+
 		for(int i = table.getRowCount()-1; i>=0; i--)
 		{
 			if(table.getValueAt(i, 0).equals(userName))
@@ -87,15 +87,19 @@ public class ServerThread extends Thread{
 					if(doc.getDocumentElement().getNodeName().equals("REGISTER")){
 						String userName = doc.getElementsByTagName("USER_NAME").item(0).getTextContent();
 						String pass = doc.getElementsByTagName("PASSWORD").item(0).getTextContent();
-						
+
 						if(checkUserName(userName)){
 							
 							String[] dataRow ={userName,pass,socket.getInetAddress().toString(),""+ID+""};
 							table.addRow(dataRow);
-							sendMessage(new XMLProtocol().registerAccept(table));							
+
+							sendMessage(new XMLProtocol().registerAccept(table));
+				
 						}
 						else{
+						
 							sendMessage(new XMLProtocol().registerDeny());
+
 						}
 					}
 					else if(doc.getDocumentElement().getNodeName().equals("PEER_KEEP_ALIVE")){
@@ -109,13 +113,18 @@ public class ServerThread extends Thread{
 					else if(doc.getDocumentElement().getNodeName().equals("LOGIN")){
 						String userName = doc.getElementsByTagName("USER_NAME").item(0).getTextContent();
 						String pass = doc.getElementsByTagName("PASSWORD").item(0).getTextContent();
+						String ip = doc.getElementsByTagName("IP").item(0).getTextContent();
+						String port = doc.getElementsByTagName("PORT").item(0).getTextContent();
 						int row = checkLogin(userName,pass);
 						if(row >= 0){
-							String ip = doc.getElementsByTagName("IP").item(0).getTextContent();
-							String port = doc.getElementsByTagName("P0RT").item(0).getTextContent();
+							
+							
+							
 							table.setValueAt(ip, row, 2);
 							table.setValueAt(port, row, 3);
-							sendMessage(new XMLProtocol().listUser(table));
+							sendMessage(new XMLProtocol().registerAccept(table));
+
+							//sendMessage(new XMLProtocol().listUser(table));
 						}
 						else sendMessage(new XMLProtocol().loginDeny());
 					}

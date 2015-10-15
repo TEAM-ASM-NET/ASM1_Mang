@@ -1,13 +1,10 @@
 package Client;
 
 import Protocol.*;
+import Server.Server;
 
 import java.io.*;
 import java.net.*;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -23,31 +20,34 @@ public class ClientGUI extends JFrame{
 	 * Create the application.
 	 */
 	public ClientGUI() {
+		
 		initialize();
 		
+		
 	}
-	public void connect(Socket s){
+	public void connect(Socket s, String userchat) throws IOException{
 		client = s;
 		reciever = new RecieveMessageThread(this, s);
+		reciever.userChat = userchat;
 		reciever.start();
+        //StartShareFile(s);
+		
 	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	public ClientGUI(DataInputStream in, DataOutputStream out) {
-		   input = in;
+	public ClientGUI(DataOutputStream out) {
+		   
 		   output = out;
 	 }
 	private void initialize() {
 		//frame = new JFrame();
 		this.setBounds(100, 100, 434, 300);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		SpringLayout springLayout = new SpringLayout();
 		this.getContentPane().setLayout(springLayout);
 		
 		btnSend = new JButton("Send");
-		springLayout.putConstraint(SpringLayout.SOUTH, btnSend, -10, SpringLayout.SOUTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, btnSend, -85, SpringLayout.EAST, getContentPane());
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//ClientGUI f = new ClientGUI();
@@ -58,14 +58,19 @@ public class ClientGUI extends JFrame{
 					long size = file.length();
 					if (size<150*1024*1024)
 					{
-						send( new XMLProtocol().fileDataBegin());
-						//sendfile(filepath);
-						send(new XMLProtocol().fileDataEnd());
+
+						share.send( new XMLProtocol().fileDataBegin());
+						share.sendfile(filepath);
+						share.send(new XMLProtocol().fileDataEnd());
+
 						textFieldMess.setText("");
 						txtrMsg.append("File shared success\n");
+						Sender = false;
 					}
 					else 
 					{
+						Sender = false;
+						textFieldMess.setText("");
 						txtrMsg.append("File is size too large\n");
 					}
 							
@@ -79,9 +84,10 @@ public class ClientGUI extends JFrame{
 		this.getContentPane().add(btnSend);
 		
 		btnLinkSend = new JButton("...");
+		springLayout.putConstraint(SpringLayout.NORTH, btnSend, 0, SpringLayout.NORTH, btnLinkSend);
+		springLayout.putConstraint(SpringLayout.WEST, btnSend, 6, SpringLayout.EAST, btnLinkSend);
+		springLayout.putConstraint(SpringLayout.EAST, btnSend, 66, SpringLayout.EAST, btnLinkSend);
 		springLayout.putConstraint(SpringLayout.SOUTH, btnLinkSend, -10, SpringLayout.SOUTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, btnLinkSend, -146, SpringLayout.EAST, getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, btnSend, 1, SpringLayout.EAST, btnLinkSend);
 		btnLinkSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				actionChooseFile();
@@ -90,6 +96,7 @@ public class ClientGUI extends JFrame{
 		this.getContentPane().add(btnLinkSend);
 		
 		textFieldMess = new JTextField();
+		springLayout.putConstraint(SpringLayout.EAST, btnLinkSend, 51, SpringLayout.EAST, textFieldMess);
 		springLayout.putConstraint(SpringLayout.WEST, textFieldMess, 37, SpringLayout.WEST, getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, textFieldMess, -13, SpringLayout.SOUTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, textFieldMess, -197, SpringLayout.EAST, getContentPane());
@@ -117,40 +124,39 @@ public class ClientGUI extends JFrame{
 		txtrMsg = new JTextArea();
 		txtrMsg.setEditable(false);
 		txtrMsg.setWrapStyleWord(true);
-		txtrMsg.setText("txtMsg");
 		scrPnlMSg.setViewportView(txtrMsg);
 		
 		JButton btnOnline = new JButton("Online");
+		springLayout.putConstraint(SpringLayout.SOUTH, btnOnline, -10, SpringLayout.SOUTH, getContentPane());
 		btnOnline.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
 			}
 		});
-		springLayout.putConstraint(SpringLayout.NORTH, btnOnline, 0, SpringLayout.NORTH, btnSend);
 		springLayout.putConstraint(SpringLayout.EAST, btnOnline, 0, SpringLayout.EAST, scrPnlMSg);
 		getContentPane().add(btnOnline);	
 	}	
 	public void actionChooseFile(){
-			JFileChooser fileChooser = new JFileChooser();
-		    fileChooser.showDialog(this, "Select File");
-		    Sender=true;
-		    textFieldMess.setText(file.getName());
-		    filepath = file.getPath();
-		    try {
-		    	send(new XMLProtocol().fileRequest("FILE_REQ"));
-		    } catch (Exception ex) {
-		    }
+
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.showDialog(this, "Select File");
+	    file = fileChooser.getSelectedFile();
+	    if(file != null){
+            if(!file.getName().isEmpty()){
+            	Sender = true;
+                textFieldMess.setText(file.getName());
+                filepath = file.getPath();;   
+                share.send(new XMLProtocol().fileRequest("FILE_REQ"));
+   
+            }
+	    }
 	}
 	
+	public void StartShareFile( Socket socket) {
+			share = new SharedFile(socket);
+			share.start();
+	}
 
-	public void send(String message) {
-			       try {
-			           output.writeUTF(message);
-			            output.flush();
-			       } 
-			        catch (IOException ex) {
-			        }
-		}
 	public void addMessage(String msg, String src)
 	{
 		String message = src + ":" + msg + "\r\n";
@@ -172,18 +178,20 @@ public class ClientGUI extends JFrame{
    
     private JScrollPane scrPnlMSg;
     public JTextArea txtrMsg;
-    
+    SharedFile share;
     private SendMessageThread sender = null;
     private RecieveMessageThread reciever = null;
   //private JFrame frame;
   	public Socket client;
     //public int port;
-    public String username;
+    public String username = "";
+    
   //  public Thread clientThread;
     public File file;
     private static DataInputStream input;
     private static DataOutputStream output;
     private String filepath;
-    boolean Sender=false;
+    boolean Sender = false;
+
   
 }

@@ -168,7 +168,7 @@ public class XMLProtocol {
 	         return documentToString(doc);
 		}
 		catch(ParserConfigurationException | DOMException ex) {
-			System.out.println("Loi xml2: " + ex.getMessage());
+				System.out.println("Loi xml2: " + ex.getMessage());
 	            ex.printStackTrace();
 	            return null;
 	     } 
@@ -189,26 +189,23 @@ public class XMLProtocol {
 		Document doc = docBuilder.parse(new InputSource(new StringReader(s)));
 		doc.getDocumentElement().normalize();
 		 NodeList nList = doc.getElementsByTagName("PEER");
-		 System.out.println("trong protocol");
+		
          for(int i = 0; i< nList.getLength(); i++){
          	Node nNode = nList.item(i);
          	
          	if(nNode.getNodeType()==Node.ELEMENT_NODE)
          	{
-         		System.out.println("trong protocol");
          		Element eElement = (Element)nNode;
-         		System.out.println("trong protocol e" + s);
          		String userName = eElement.getElementsByTagName("USER_NAME").item(0).getTextContent();
          		String pass = "";
          		String ip = eElement.getElementsByTagName("IP").item(0).getTextContent();
          		String port = eElement.getElementsByTagName("PORT").item(0).getTextContent();
          		
          		String[] data = {userName,pass,ip,port};
-         		System.out.println("trong protocol e");
          		table.addRow(data);
          		
          	}
-         }System.out.println("trong protocol");
+         }
 		return table;
 		
 	}
