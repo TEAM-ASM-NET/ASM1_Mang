@@ -10,6 +10,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 
+
+
+
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -22,11 +25,11 @@ public class SharedFile  extends Thread {
 	boolean running = true;
 	public String filename;
 	private DataInputStream input;
-	private ObjectOutputStream output;
+	private DataOutputStream output;
 	//public boolean accept = true;
     public SharedFile(Socket socket )  {
 	// TODO Auto-generated constructor stub
-    	this.socket=socket;
+    	this.socket = socket;
     }
  
 	@Override
@@ -34,7 +37,7 @@ public class SharedFile  extends Thread {
 		// TODO Auto-generated method stud
 		
 		try{
-			output = new ObjectOutputStream(socket.getOutputStream());
+			output = new DataOutputStream(socket.getOutputStream());
 	        output.flush();
 	        
 	        input = new DataInputStream(socket.getInputStream());
@@ -43,22 +46,20 @@ public class SharedFile  extends Thread {
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			while(true)
 			{
-				
-				System.out.print("Loi");
-				String message = input.readUTF();
-				
-				//if(message!=null){
+					String message = input.readUTF();
 					
 					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
 					doc.getDocumentElement().normalize();
 					
 				if(doc.getDocumentElement().getNodeName().equals("FILE_REQ")) {
+					
                     filename = doc.getDocumentElement().getFirstChild().getTextContent();
-                    int choise = JOptionPane.showConfirmDialog(null, frame.username + " want to send " + filename + " to you?", "Message",
+                   
+                    int choise = JOptionPane.showConfirmDialog(null, " want to send " + filename + " to you?", "Message",
 					        JOptionPane.YES_NO_OPTION);
                     if(choise == JOptionPane.YES_OPTION) {
-                    	
-                        send(new XMLProtocol().fileRequestAck("FILE_REQ_ACK"));
+                    
+                        send(new XMLProtocol().fileRequestAck("6696"));
                         
                     }
                     else {
@@ -66,14 +67,13 @@ public class SharedFile  extends Thread {
                     }
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_ACK")) {
-                    JOptionPane.showMessageDialog(null, frame.username + " accept");
+                    //JOptionPane.showMessageDialog(null,  " accept");
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_NOACK")) {
-                    JOptionPane.showMessageDialog(null, frame.username + " dosen't accept");
+                   // JOptionPane.showMessageDialog(null,  " dosen't accept");
                    frame.textFieldMess.setText("");
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_BEGIN")) {
-                    System.out.println("Ingoing : file");
                     String saveTo = "";
                     JFileChooser jf = new JFileChooser();
                     jf.setSelectedFile(new File(filename));
@@ -92,7 +92,8 @@ public class SharedFile  extends Thread {
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_END")) {
                 	frame.textFieldMess.setText("");
-                    frame.txtrMsg.append("Ban da nhan duoc mot file tu" + frame.username);
+                	System.out.print("LOoI");
+                    //frame.txtrMsg.append("Ban da nhan duoc mot file tu" );
                 }
 				//}
 			}
@@ -103,6 +104,7 @@ public class SharedFile  extends Thread {
 	}
 	public void send(String message){
 		try {
+			
 			output.writeUTF(message);
 			output.flush();
 		} catch (IOException e) {
@@ -111,8 +113,8 @@ public class SharedFile  extends Thread {
 		}
 		
 	}
-	
-	public void sendfile(String _filepath) {
+
+	public void sendfile(String _filepath) { // day
 		try {
 			@SuppressWarnings("resource")
 			FileInputStream fileshare = new FileInputStream(_filepath);
