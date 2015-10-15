@@ -175,7 +175,7 @@ public class XMLProtocol {
 	    }
 	}
 	public String registerDeny(){
-		return "<REGISTER_DENY>";
+		return "<REGISTER_DENY/>";
 	}
 	
 	//  Tra ve danh sach cac user dang online dang XML khi register accept

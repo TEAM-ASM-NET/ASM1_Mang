@@ -168,7 +168,7 @@ public class ClientGUI extends JFrame{
 
 	public void send(String message) {
 			       try {
-			           output.writeUTF(message);
+			            output.writeUTF(message);
 			            output.flush();
 			       } 
 			        catch (IOException ex) {
