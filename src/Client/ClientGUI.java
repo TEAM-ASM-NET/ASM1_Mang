@@ -1,13 +1,10 @@
 package Client;
 
 import Protocol.*;
+import Server.Server;
 
 import java.io.*;
 import java.net.*;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -23,19 +20,22 @@ public class ClientGUI extends JFrame{
 	 * Create the application.
 	 */
 	public ClientGUI() {
+		
 		initialize();
 		
 	}
-	public void connect(Socket s){
+	public void connect(Socket s) throws IOException{
 		client = s;
 		reciever = new RecieveMessageThread(this, s);
 		reciever.start();
+        StartShareFile(s);
+		
 	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	public ClientGUI(DataInputStream in, DataOutputStream out) {
-		   input = in;
+	public ClientGUI(DataOutputStream out) {
+		   
 		   output = out;
 	 }
 	private void initialize() {
@@ -58,14 +58,17 @@ public class ClientGUI extends JFrame{
 					long size = file.length();
 					if (size<150*1024*1024)
 					{
-						send( new XMLProtocol().fileDataBegin());
-						sendfile(filepath);
-						send(new XMLProtocol().fileDataEnd());
+						share.send( new XMLProtocol().fileDataBegin());
+						share.sendfile(filepath);
+						share.send(new XMLProtocol().fileDataEnd());
 						textFieldMess.setText("");
 						txtrMsg.append("File shared success\n");
+						Sender = false;
 					}
 					else 
 					{
+						Sender = false;
+						textFieldMess.setText("");
 						txtrMsg.append("File is size too large\n");
 					}
 							
@@ -131,40 +134,24 @@ public class ClientGUI extends JFrame{
 		getContentPane().add(btnOnline);	
 	}	
 	public void actionChooseFile(){
-			JFileChooser fileChooser = new JFileChooser();
-		    fileChooser.showDialog(this, "Select File");
-		    Sender=true;
-		    textFieldMess.setText(file.getName());
-		    filepath = file.getPath();
-		    try {
-		    	send(new XMLProtocol().fileRequest("FILE_REQ"));
-		    } catch (Exception ex) {
-		    }
-	}
-	public void sendfile(String _filepath) {
-		try {
-			@SuppressWarnings("resource")
-			FileInputStream fileshare = new FileInputStream(_filepath);
-			byte[] buffer = new byte[1024];
-		    int count;
-			            
-			 while((count = fileshare.read(buffer)) >= 0){
-			      output.write(buffer, 0, count);
-	           }             
-		      output.flush();
-	    } catch (IOException ex) {
-			 System.out.println("Error: Can't send");
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.showDialog(this, "Select File");
+	    file = fileChooser.getSelectedFile();
+	    if(file != null){
+            if(!file.getName().isEmpty()){
+            	Sender = true;
+                textFieldMess.setText(file.getName());
+                filepath = file.getPath();;   
+                share.send(new XMLProtocol().fileRequest("FILE_REQ"));
+   
+            }
 	    }
 	}
-
-	public void send(String message) {
-			       try {
-			           output.writeUTF(message);
-			            output.flush();
-			       } 
-			        catch (IOException ex) {
-			        }
-		}
+	
+	public void StartShareFile( Socket socket) {
+			share = new SharedFile(socket);
+			share.start();
+	}
 	public void addMessage(String msg, String src)
 	{
 		String message = src + ":" + msg + "\r\n";
@@ -186,7 +173,7 @@ public class ClientGUI extends JFrame{
    
     private JScrollPane scrPnlMSg;
     public JTextArea txtrMsg;
-    
+    SharedFile share;
     private SendMessageThread sender = null;
     private RecieveMessageThread reciever = null;
   //private JFrame frame;
@@ -198,6 +185,7 @@ public class ClientGUI extends JFrame{
     private static DataInputStream input;
     private static DataOutputStream output;
     private String filepath;
-    boolean Sender=false;
+    boolean Sender = false;
+
   
 }

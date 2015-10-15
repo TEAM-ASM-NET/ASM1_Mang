@@ -31,7 +31,6 @@ public class SocketPeer implements Runnable{
 				String _result;
 				
 				if (result == 0){
-					
 					_result = pro.chatAccept();
 					buff.write(_result);
 					ClientGUI frm = new ClientGUI();

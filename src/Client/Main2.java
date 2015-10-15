@@ -1,5 +1,6 @@
 package Client;
 
+import java.io.DataOutputStream;
 import java.net.Socket;
 
 public class Main2 {
@@ -8,8 +9,9 @@ public class Main2 {
 		// TODO Auto-generated method stub
 		try {
 			Socket s = new Socket("localhost", 6696);
+		
 			ClientGUI f = new ClientGUI();
-			f.setTitle("Tao là client");
+			f.setTitle("Tao lï¿½ client");
 			f.connect(s);
 			f.setVisible(true);
 		}catch(Exception e){
