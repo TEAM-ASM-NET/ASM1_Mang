@@ -174,9 +174,10 @@ public class ClientGUI extends JFrame{
 	public void sendMessage()
 	{
 		addMessage(textFieldMess.getText(), "Me");
-		textFieldMess.setText("");
 		sender = new SendMessageThread(client, textFieldMess.getText());
+		//System.out.println("Msg trong GUI: " + textFieldMess.getText());
 		sender.start();
+		textFieldMess.setText("");
 	}
 
 	public javax.swing.JButton btnSend;

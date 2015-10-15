@@ -319,8 +319,7 @@ public class XMLProtocol {
 	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 	         Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
 	         doc.getDocumentElement().normalize();
-	         String element = doc.getElementsByTagName("CHAT_MSG").item(0).toString();
-	         
+	         String element = doc.getElementsByTagName("CHAT_MSG").item(0).getTextContent();
 	         return remoteEscape(element);
 	         
 		}
