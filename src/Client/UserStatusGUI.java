@@ -10,18 +10,28 @@ import java.net.*;
 import java.io.*;
 import javax.swing.table.*;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class UserStatusGUI extends JFrame{
+	private UserStatusGUI fff;
 	private JTextField txtHostname;
 	private JTextField txthostport;
 	private JTextField txtusername;
 	private JPasswordField pwdTxtpass;
 	public UserStatusGUI() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				Logout();
+			}
+		});
 		setSize(new Dimension(378, 346));
 		setTitle("Start form");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//socket = s;
 		Initially();
+		fff  =this;
 	}
 	
 	private void Initially(){
@@ -203,7 +213,7 @@ public class UserStatusGUI extends JFrame{
 					roleServer.start();
 					
 					//Send status to server
-					SendStatusClient stt = new SendStatusClient(socket, txtusername.getText(), this);
+					SendStatusClient stt = new SendStatusClient(socket, txtusername.getText(), fff);
 					stt.start();
 					
 					//btnLogin.setEnabled(false);

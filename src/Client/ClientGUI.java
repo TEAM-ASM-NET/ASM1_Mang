@@ -28,11 +28,13 @@ public class ClientGUI extends JFrame{
 
 
 	public void connect(Socket s, String userchat) throws IOException{
+
 		client = s;
 //		reciever = new RecieveMessageThread(this, s);
 //		reciever.userChat = userchat;
 
 //		reciever.start();
+
         StartShareFile(s);
 	}
 	/**
