@@ -25,11 +25,16 @@ public class ClientGUI extends JFrame{
 		
 		
 	}
+
+
 	public void connect(Socket s, String userchat) throws IOException{
+
 		client = s;
 //		reciever = new RecieveMessageThread(this, s);
 //		reciever.userChat = userchat;
+
 //		reciever.start();
+
         StartShareFile(s);
 	}
 	/**
@@ -60,23 +65,35 @@ public class ClientGUI extends JFrame{
 						
 						share.send( new XMLProtocol().fileDataBegin());
 						share.sendfile(filepath);
-						share.send(new XMLProtocol().fileDataEnd());
-
+						System.out.println(share.accept);
+						try {
+							Thread.sleep(3000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						if (share.accept){
+							share.accept=false;
+							share.send(new XMLProtocol().fileDataEnd());
+							System.out.println("Da gui");
+						}
 						textFieldMess.setText("");
-						//txtrMsg.append("File shared success\n");
+						txtrMsg.append("File shared success\n");
 						Sender = false;
 					}
 					else 
 					{
 						Sender = false;
 						textFieldMess.setText("");
-						//txtrMsg.append("File is size too large\n");
+						txtrMsg.setText("File is size too large\n");
+
 					}
 							
 				}
 				else{
 					sendMessage();
 				}
+				
 
 			}
 		});
@@ -189,6 +206,7 @@ public class ClientGUI extends JFrame{
     //public int port;
 
     public String username = "";
+
 
   //  public Thread clientThread;
     public File file;
