@@ -151,8 +151,13 @@ public class ClientGUI extends JFrame{
 	}
 	
 	public void StartShareFile( Socket socket) {
-			share = new SharedFile(socket);
+		try{
+			Socket shareSocket = new Socket(socket.getLocalAddress(), socket.getLocalPort());
+			share = new SharedFile(shareSocket);
 			share.start();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
 	}
 
 	public void addMessage(String msg, String src)

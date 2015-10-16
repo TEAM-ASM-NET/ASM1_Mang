@@ -32,7 +32,7 @@ public class SendStatusClient implements Runnable{
 				String lstUser = recieve.readUTF();
 				//JOptionPane.showMessageDialog(null, lstUser + "DUoi read");
 				frm.UpdateJList(lstUser);
-				Thread.sleep(5000);
+				Thread.sleep(10000);
 			}
 		}catch(Exception e){
 			System.out.print("Loi " + e.getMessage());
