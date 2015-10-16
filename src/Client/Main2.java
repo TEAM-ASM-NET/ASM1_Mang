@@ -11,8 +11,8 @@ public class Main2 {
 			Socket s = new Socket("localhost", 6696);
 		
 			ClientGUI f = new ClientGUI();
-			f.setTitle("Tao l� client");
-			f.connect(s);
+			f.setTitle("Tao la client");
+			f.connect(s, "client");
 			f.setVisible(true);
 		}catch(Exception e){
 			System.out.println("Loi");

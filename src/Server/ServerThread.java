@@ -61,7 +61,8 @@ public class ServerThread extends Thread{
 		{
 			if(table.getValueAt(i, 0).equals(userName))
 			{	
-				table.removeRow(i);
+				table.setValueAt("", i, 2);
+				table.setValueAt("", i, 3);
 				break;
 			}
 		}
@@ -77,10 +78,11 @@ public class ServerThread extends Thread{
 			output = new DataOutputStream(socket.getOutputStream());
 			output.flush();
 			input = new DataInputStream(socket.getInputStream());
-			
+			long st = System.currentTimeMillis();
 			while(true){
 				String message = input.readUTF();
-				
+				long end = System.currentTimeMillis();
+				System.out.println(end);
 				if(message!=null){
 					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
 					doc.getDocumentElement().normalize();

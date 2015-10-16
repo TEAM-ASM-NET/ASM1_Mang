@@ -21,9 +21,11 @@ public class SocketPeer implements Runnable{
 			while (true)
 			{
 				socket = server.accept();
-				buff = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+				DataInputStream ddd = new DataInputStream(socket.getInputStream());
+				String userChat = ddd.readUTF();
+				DataOutputStream buff = new DataOutputStream(socket.getOutputStream());
 				
-				String msgbox = "Client ";// + socket.getInetAddress() + " want to chat. Are you agree?";
+				String msgbox = "Client " + userChat /* + socket.getInetAddress() */ + " want to chat. Are you agree?";
 				
 				int result = JOptionPane.showConfirmDialog(null, msgbox, "Information", JOptionPane.YES_NO_OPTION);
 				
@@ -32,20 +34,23 @@ public class SocketPeer implements Runnable{
 				
 				if (result == 0){
 					_result = pro.chatAccept();
-					buff.write(_result);
+					buff.writeUTF(_result);
 					ClientGUI frm = new ClientGUI();
-					frm.connect(socket);
+					frm.connect(socket, userChat);
+					frm.setTitle("Chat with: " + userChat);
 					frm.setVisible(true);
 					
 				} else{
 					
 					_result = pro.chatDeny();
-					buff.write(_result);
+					buff.writeUTF(_result);
 					
 				}
 			}//end while true
 		}
-		catch (IOException e){}
+		catch (Exception e){
+			System.out.println("Loi o PeerThread: " + e.getMessage());
+		}
 	}
 	
 	public void start(){
@@ -54,10 +59,19 @@ public class SocketPeer implements Runnable{
 			t.start();
 		}
 	}
+	public void stop(){
+		if (t != null){
+			try{
+				socket.close();
+				server.close();
+			}catch(Exception e){
+				System.out.println("Loi o stop PeerThread: " + e.getMessage());
+			}
+		}
+	}
 	private Socket socket = null;
 	private ServerSocket server = null;
-	private BufferedWriter buff = null;
+	//private BufferedWriter buff = null;
 	public int port;
 	private Thread t = null;
-	
 }

@@ -26,7 +26,7 @@ public class SharedFile  extends Thread {
 	public String filename;
 	private DataInputStream input;
 	private DataOutputStream output;
-	//public boolean accept = true;
+	public boolean accept = false;
     public SharedFile(Socket socket )  {
 	// TODO Auto-generated constructor stub
     	this.socket = socket;
@@ -44,12 +44,12 @@ public class SharedFile  extends Thread {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			while(true)
+			while(running)
 			{
 					String message = input.readUTF();
-					
 					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
 					doc.getDocumentElement().normalize();
+					System.out.println(message);
 					
 				if(doc.getDocumentElement().getNodeName().equals("FILE_REQ")) {
 					
@@ -67,11 +67,11 @@ public class SharedFile  extends Thread {
                     }
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_ACK")) {
-                    //JOptionPane.showMessageDialog(null,  " accept");
+                	frame.txtrMsg.setText("Đối phương đã chấp nhận yêu cầu");
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_NOACK")) {
-                   // JOptionPane.showMessageDialog(null,  " dosen't accept");
-                   frame.textFieldMess.setText("");
+                	frame.txtrMsg.setText("Đối phương từ chối yêu cầu");
+                    frame.textFieldMess.setText("");
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_BEGIN")) {
                     String saveTo = "";
@@ -84,20 +84,24 @@ public class SharedFile  extends Thread {
                     if(saveTo != null && returnVal == JFileChooser.APPROVE_OPTION){
                         byte[] buffer = new byte[1024];
                         int count;
-                        while((count = input.read(buffer)) >= 0){
+                        while((count = input.read(buffer)) >= 0 ){
+                        	System.out.println("hfsk"+count);
                             Out.write(buffer, 0, count);
+                            Out.flush();
+                            if(count< 1024) break;
                         }
-                        Out.flush();
+                        System.out.println("hfhsadkfhaslkhflsda"+count);
+                        accept = true;
+                       // Out.flush();
                     }
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_END")) {
-                	System.out.print("aaaaaa"+doc.getDocumentElement().getNodeName());
-                	frame.textFieldMess.setText("");
-                    frame.txtrMsg.setText("Ban da nhan duoc mot file tu" );
+                    frame.txtrMsg.append("Bạn đã nhận được một file" );
                 }
 			}
 		}catch (Exception e){
-			
+			System.out.println("LOi khong ta");
+			running=false;
 		}
 		
 	}
@@ -112,13 +116,14 @@ public class SharedFile  extends Thread {
 		}
 		
 	}
+
 	public void sendfile(String _filepath) { // day
 		try {
-			
 			@SuppressWarnings("resource")
 			FileInputStream fileshare = new FileInputStream(_filepath);
 			byte[] buffer = new byte[1024];
 		    int count;
+			            
 			 while((count = fileshare.read(buffer)) >= 0){
 			      output.write(buffer, 0, count);
 	           }             

@@ -3,24 +3,12 @@ package Client;
 import javax.swing.*;
 
 import Protocol.XMLProtocol;
-import Server.ServerForm;
 
 import java.awt.event.ActionListener;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.net.*;
 import java.io.*;
 import javax.swing.table.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import java.awt.Window.Type;
 import java.awt.Dimension;
 
 public class UserStatusGUI extends JFrame{
@@ -29,9 +17,9 @@ public class UserStatusGUI extends JFrame{
 	private JTextField txtusername;
 	private JPasswordField pwdTxtpass;
 	public UserStatusGUI() {
-		setSize(new Dimension(559, 346));
+		setSize(new Dimension(378, 346));
 		setTitle("Start form");
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//socket = s;
 		Initially();
 	}
@@ -39,7 +27,8 @@ public class UserStatusGUI extends JFrame{
 	private void Initially(){
 		
 		table = new DefaultTableModel();
-		table.addColumn("username");		
+		table.addColumn("username");
+		table.addColumn("password");
 		table.addColumn("ip");
 		table.addColumn("port");
 		
@@ -99,26 +88,7 @@ public class UserStatusGUI extends JFrame{
 		btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (!txthostport.getText().isEmpty() && !txthostport.getText().isEmpty()){
-					try{
-						socket = new Socket(txtHostname.getText(), Integer.parseInt(txthostport.getText()));
-						
-						btnLogin.setEnabled(true);
-						btnRegister.setEnabled(true);
-						list.setEnabled(true);
-						txtHostname.setEditable(false);
-						txthostport.setEnabled(false);
-						btnConnect.setEnabled(false);
-						txtusername.setEnabled(true);
-						pwdTxtpass.setEnabled(true);
-											
-					}catch (Exception e){
-						JOptionPane.showMessageDialog(null, "Not find server");
-					}
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "Not find server");
-				}
+				StartConnect();
 			}
 		});
 		springLayout.putConstraint(SpringLayout.NORTH, btnConnect, 26, SpringLayout.SOUTH, lblUserName);
@@ -161,56 +131,46 @@ public class UserStatusGUI extends JFrame{
 		list = new JList<String>();
 		list.setSize(new Dimension(106, 142));
 		list.setEnabled(false);
-		scrollPane.setColumnHeaderView(list);
+		scrollPane.setViewportView(list);
 		
 		
 		btnClose = new JButton("Close");
+		springLayout.putConstraint(SpringLayout.WEST, btnClose, 0, SpringLayout.WEST, lblHostName);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnClose, 77, SpringLayout.SOUTH, btnLogin);
+		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnConnect);
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
-		springLayout.putConstraint(SpringLayout.NORTH, btnClose, 19, SpringLayout.SOUTH, btnLogin);
-		springLayout.putConstraint(SpringLayout.WEST, btnClose, 0, SpringLayout.WEST, lblHostName);
-		springLayout.putConstraint(SpringLayout.SOUTH, btnClose, 42, SpringLayout.SOUTH, btnLogin);
-		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnConnect);
 		getContentPane().add(btnClose);
 		
-		JButton btnStartChat = new JButton("Start Chat");
+		btnStartChat = new JButton("Start Chat");
+		btnStartChat.setEnabled(false);
+		springLayout.putConstraint(SpringLayout.NORTH, btnClose, 0, SpringLayout.NORTH, btnStartChat);
 		springLayout.putConstraint(SpringLayout.NORTH, btnStartChat, 6, SpringLayout.SOUTH, scrollPane);
 		springLayout.putConstraint(SpringLayout.WEST, btnStartChat, 229, SpringLayout.WEST, getContentPane());
 		btnStartChat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (!list.isSelectionEmpty()){
-					try{
-						int index = list.getSelectedIndex();
-						String ip = table.getValueAt(index, 1).toString();
-						String port = table.getValueAt(index, 2).toString();
-						//String username = table.getValueAt(index, 0).toString();
-						
-						
-						EventQueue.invokeLater(new Runnable() {
-							public void run() {
-								try {
-									
-									Socket peerServer = new Socket(ip, Integer.parseInt(port));
-									ClientGUI newChat = new ClientGUI();
-									newChat.connect(peerServer);
-									newChat.username = txtusername.getText();
-									
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-						});
-						
-					}catch(Exception e){}
-				}
+				StartChat();
 			}
 		});
 		getContentPane().add(btnStartChat);
+		
+		btnLogout = new JButton("Logout");
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Logout();
+			}
+		});
+		btnLogout.setEnabled(false);
+		springLayout.putConstraint(SpringLayout.WEST, btnLogout, 0, SpringLayout.WEST, lblHostName);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnLogout, -15, SpringLayout.NORTH, btnClose);
+		springLayout.putConstraint(SpringLayout.EAST, btnLogout, 0, SpringLayout.EAST, btnConnect);
+		getContentPane().add(btnLogout);
 
 	}
+
 	private void LoginOrResgister(boolean isLogin){
 		
 		if (!txtusername.getText().isEmpty() && !pwdTxtpass.getText().isEmpty()){
@@ -233,26 +193,29 @@ public class UserStatusGUI extends JFrame{
 				//Recieve list user online from server
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
-				System.out.println("tr ve "+lstUser);
+				
 				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
-					table = protocol.parseString(lstUser);JOptionPane.showMessageDialog(null, "tren cung");
-					DefaultListModel<String> tmp = new DefaultListModel<String>();
 					
+					UpdateJList(lstUser);
+					//Create listenner to accept other chat
 					
-					list.setModel(tmp);
+					roleServer = new SocketPeer(socket.getLocalPort() + 1);
+					roleServer.start();
 					
-					for (int i = 0; i < table.getRowCount(); i++){
-						tmp.addElement(table.getValueAt(i, 0).toString());
-					}
-					JOptionPane.showMessageDialog(null, "message ok "  + lstUser);
-						
+					//Send status to server
+					SendStatusClient stt = new SendStatusClient(socket, txtusername.getText(), this);
+					stt.start();
 					
 					//btnLogin.setEnabled(false);
 		    		btnRegister.setEnabled(false);
+		    		btnLogin.setEnabled(false);
+		    		btnLogout.setEnabled(true);
+		    		btnConnect.setEnabled(false);
+		    		btnStartChat.setEnabled(true);
 		    		list.setEnabled(true);
+		    		
 		    		txtHostname.setEnabled(false);
 		    		txthostport.setEnabled(false);
-		    		btnConnect.setEnabled(false);
 		    		txtusername.setEnabled(false);
 		    		pwdTxtpass.setEnabled(false);
 				}
@@ -268,20 +231,122 @@ public class UserStatusGUI extends JFrame{
 			JOptionPane.showMessageDialog(null, "Username or Password is empty");
 		}
 	}
-	
-	private void Register(){
+	void Logout(){
+		try{
+			
+			XMLProtocol protocol = new XMLProtocol();
+			String stt = protocol.logOut(username, "OFFLINE");
+			DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
+			dout.writeUTF(stt);
+			dout.flush();
+			
+		}catch (IOException e){
+			System.out.println(e.getMessage());
+		}
+		try {
+		roleServer.stop();
+		//Khong can do'ng socket vi van co the login vo cung 1 server
+		socket.close();
+		}
+		catch(Exception e){}
+		btnConnect.setEnabled(true);
+		btnLogin.setEnabled(false);
+		btnLogout.setEnabled(false);
+		btnRegister.setEnabled(false);
+		btnStartChat.setEnabled(false);
+		txtusername.setEnabled(false);
+		pwdTxtpass.setEnabled(false);
+		
+		txtHostname.setEnabled(true);
+		txthostport.setEnabled(true);
+		//Delete old list user online
+		DefaultListModel<String> tb = (DefaultListModel<String>) list.getModel();
+		tb.removeAllElements();
 		
 	}
+
+	private void StartConnect(){
+		if (!txthostport.getText().isEmpty() && !txthostport.getText().isEmpty()){
+			try{
+				socket = new Socket(txtHostname.getText(), Integer.parseInt(txthostport.getText()));
+				
+				btnLogin.setEnabled(true);
+				btnRegister.setEnabled(true);
+				btnLogout.setEnabled(false);
+				btnStartChat.setEnabled(false);
+				list.setEnabled(true);
+				txtHostname.setEnabled(false);
+				txthostport.setEnabled(false);
+				btnConnect.setEnabled(false);
+				txtusername.setEnabled(true);
+				pwdTxtpass.setEnabled(true);
+									
+			}catch (Exception e){
+				JOptionPane.showMessageDialog(null, "Not find server");
+			}
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "Not find server");
+		}
+	}
+
+	private void StartChat(){
+		if (!list.isSelectionEmpty()){
+			try{
+				int index = list.getSelectedIndex();
+				String ip = table.getValueAt(index, 2).toString();
+				String port = table.getValueAt(index, 3).toString();
+				String userchat = table.getValueAt(index, 0).toString();
+				//Chat to client, that client is server
+				
+				Socket s = new Socket(ip.substring(1),  Integer.parseInt(port) + 1);
+				DataOutputStream ddd = new DataOutputStream(s.getOutputStream());
+				ddd.writeUTF(txtusername.getText());
+				ddd.flush();
+				//ddd.close();
+				ClientChatThread frm = new ClientChatThread(s, userchat);
+				frm.start();
+				
+			}catch(Exception e){
+				System.out.println("Loi form moi + " + e.getMessage() + " ||| Cause: " + e.getCause());
+			}
+		}
+	}
 	
+	public void UpdateJList(String lstUser){
+		try{
+			try{
+				DefaultListModel<String> tb = (DefaultListModel<String>) list.getModel();
+				tb.removeAllElements();
+			}catch(Exception e){}
+			//JOptionPane.showMessageDialog(null, lstUser);
+		XMLProtocol protocol = new XMLProtocol();
+		table = protocol.parseString(lstUser);
+		DefaultListModel<String> tmp = new DefaultListModel<String>();
+		
+		list.setModel(tmp);
+		
+		for (int i = 0; i < table.getRowCount(); i++){
+			tmp.addElement(table.getValueAt(i, 0).toString());
+		}
+		}
+		catch(Exception e){
+			System.out.println("Cann't take list user");
+		}
+		
+	}
 	JButton btnClose;
 	JList<String> list;
 	JScrollPane scrollPane;
 	JButton btnLogin;
 	JButton btnRegister;
 	JButton btnConnect;
+	JButton btnLogout;
+	JButton btnStartChat;
 	
 	Socket socket = null;
-	public String username;
+	public String username = "";
 	
 	private DefaultTableModel table = null;
+	private SocketPeer roleServer;
 }

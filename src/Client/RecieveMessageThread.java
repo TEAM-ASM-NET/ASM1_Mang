@@ -23,7 +23,7 @@ public class RecieveMessageThread implements Runnable{
 				{
 					System.out.println("Tn nhan: " + msgRecieved);
 					String msg = protocol.XMLToMessage(msgRecieved);
-					frm.addMessage(msg, socket.getInetAddress().getHostAddress());
+					frm.addMessage(msg, userChat);
 					//System.out.println("Tn nhan: " + msg);
 				}
 			}
@@ -50,4 +50,5 @@ public class RecieveMessageThread implements Runnable{
 	ClientGUI frm = null;
 	Socket socket = null;
 	Thread t = null;
+	public String userChat = "";
 }

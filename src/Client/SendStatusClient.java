@@ -7,20 +7,26 @@ import Protocol.XMLProtocol;
 
 public class SendStatusClient implements Runnable{
 	
-	public SendStatusClient(Socket s, String u){
+	public SendStatusClient(Socket s, String u, UserStatusGUI f){
 		socket = s;
 		username = u;
+		frm = f;
 	}
+	
 	public void run(){
 		try{
 			while(true){
-				recieve = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
 				send = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 				XMLProtocol protocol = new XMLProtocol();
 				String strSend = protocol.alive(username, "ALIVE");
 				send.write(strSend);
 				send.flush();
-				Thread.sleep(15000);
+				
+				recieve = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				String lstUser = recieve.readLine();
+				frm.UpdateJList(lstUser);
+				Thread.sleep(5000);
 				
 			}
 		}catch(Exception e){}
@@ -33,4 +39,5 @@ public class SendStatusClient implements Runnable{
 	BufferedWriter send = null;
 	Socket socket = null;
 	String username;
+	UserStatusGUI frm;
 }
