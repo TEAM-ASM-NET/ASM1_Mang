@@ -26,7 +26,7 @@ public class SendStatusClient implements Runnable{
 				recieve = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String lstUser = recieve.readLine();
 				frm.UpdateJList(lstUser);
-				Thread.sleep(15000);
+				Thread.sleep(5000);
 				
 			}
 		}catch(Exception e){}

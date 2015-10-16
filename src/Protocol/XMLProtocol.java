@@ -152,17 +152,19 @@ public class XMLProtocol {
 	         
 	         for(int i = table.getRowCount() - 1; i>=0; i--)
 	         {
-	        	 Element peer = doc.createElement("PEER");
-	        	 list.appendChild(peer);
-	        	 Element user = doc.createElement("USER_NAME");
-	        	 user.setTextContent(table.getValueAt(i, 0).toString());
-	        	 peer.appendChild(user);
-	        	 Element ip = doc.createElement("IP");
-	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
-	        	 peer.appendChild(ip);
-	        	 Element port = doc.createElement("PORT");
-	        	 port.setTextContent(table.getValueAt(i, 3).toString());
-	        	 peer.appendChild(port);
+	        	 if(table.getValueAt(i, 2)!=""){
+		        	 Element peer = doc.createElement("PEER");
+		        	 list.appendChild(peer);
+		        	 Element user = doc.createElement("USER_NAME");
+		        	 user.setTextContent(table.getValueAt(i, 0).toString());
+		        	 peer.appendChild(user);
+		        	 Element ip = doc.createElement("IP");
+		        	 ip.setTextContent(table.getValueAt(i, 2).toString());
+		        	 peer.appendChild(ip);
+		        	 Element port = doc.createElement("PORT");
+		        	 port.setTextContent(table.getValueAt(i, 3).toString());
+		        	 peer.appendChild(port);
+	        	 }
 	         }
 	         
 	         return documentToString(doc);
@@ -210,7 +212,24 @@ public class XMLProtocol {
 		
 	}
 	public String registerDeny(){
-		return "</REGISTER_DENY>";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("REGISTER_DENY");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 	
 	//  Tra ve danh sach cac user dang online dang XML khi register accept
@@ -226,17 +245,19 @@ public class XMLProtocol {
 	         
 	         for(int i = table.getRowCount() - 1; i>=0; i--)
 	         {
-	        	 Element peer = doc.createElement("PEER");
-	        	 list.appendChild(peer);
-	        	 Element user = doc.createElement("USER_NAME");
-	        	 user.setTextContent(table.getValueAt(i, 0).toString());
-	        	 peer.appendChild(user);
-	        	 Element ip = doc.createElement("IP");
-	        	 ip.setTextContent(table.getValueAt(i, 2).toString());
-	        	 peer.appendChild(ip);
-	        	 Element port = doc.createElement("PORT");
-	        	 port.setTextContent(table.getValueAt(i, 3).toString());
-	        	 peer.appendChild(port);
+	        	 if(table.getValueAt(i, 2)!=""){
+		        	 Element peer = doc.createElement("PEER");
+		        	 list.appendChild(peer);
+		        	 Element user = doc.createElement("USER_NAME");
+		        	 user.setTextContent(table.getValueAt(i, 0).toString());
+		        	 peer.appendChild(user);
+		        	 Element ip = doc.createElement("IP");
+		        	 ip.setTextContent(table.getValueAt(i, 2).toString());
+		        	 peer.appendChild(ip);
+		        	 Element port = doc.createElement("PORT");
+		        	 port.setTextContent(table.getValueAt(i, 3).toString());
+		        	 peer.appendChild(port);
+	        	 }
 	         }
 	         
 	         return documentToString(doc);
