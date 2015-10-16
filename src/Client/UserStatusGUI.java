@@ -26,7 +26,7 @@ public class UserStatusGUI extends JFrame{
 				Logout();
 			}
 		});
-		setSize(new Dimension(378, 346));
+		setSize(new Dimension(442, 362));
 		setTitle("Start form");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//socket = s;
@@ -146,7 +146,6 @@ public class UserStatusGUI extends JFrame{
 		
 		btnClose = new JButton("Close");
 		springLayout.putConstraint(SpringLayout.WEST, btnClose, 0, SpringLayout.WEST, lblHostName);
-		springLayout.putConstraint(SpringLayout.SOUTH, btnClose, 77, SpringLayout.SOUTH, btnLogin);
 		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnConnect);
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -156,6 +155,7 @@ public class UserStatusGUI extends JFrame{
 		getContentPane().add(btnClose);
 		
 		btnStartChat = new JButton("Start Chat");
+		springLayout.putConstraint(SpringLayout.SOUTH, btnClose, 0, SpringLayout.SOUTH, btnStartChat);
 		btnStartChat.setEnabled(false);
 		springLayout.putConstraint(SpringLayout.NORTH, btnClose, 0, SpringLayout.NORTH, btnStartChat);
 		springLayout.putConstraint(SpringLayout.NORTH, btnStartChat, 6, SpringLayout.SOUTH, scrollPane);
@@ -168,6 +168,7 @@ public class UserStatusGUI extends JFrame{
 		getContentPane().add(btnStartChat);
 		
 		btnLogout = new JButton("Logout");
+		springLayout.putConstraint(SpringLayout.SOUTH, btnLogout, -15, SpringLayout.NORTH, btnClose);
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Logout();
@@ -175,7 +176,6 @@ public class UserStatusGUI extends JFrame{
 		});
 		btnLogout.setEnabled(false);
 		springLayout.putConstraint(SpringLayout.WEST, btnLogout, 0, SpringLayout.WEST, lblHostName);
-		springLayout.putConstraint(SpringLayout.SOUTH, btnLogout, -15, SpringLayout.NORTH, btnClose);
 		springLayout.putConstraint(SpringLayout.EAST, btnLogout, 0, SpringLayout.EAST, btnConnect);
 		getContentPane().add(btnLogout);
 
@@ -204,14 +204,15 @@ public class UserStatusGUI extends JFrame{
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
 				
-				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
+				if (!lstUser.equals(protocol.registerDeny()) || !lstUser.equals(protocol.loginDeny())){
 					
 					UpdateJList(lstUser);
 					//Create listenner to accept other chat
+					JOptionPane.showMessageDialog(null, "tren role stt");
 					
 					roleServer = new SocketPeer(socket.getLocalPort() + 1);
 					roleServer.start();
-					
+					JOptionPane.showMessageDialog(null, "duoi role");
 					//Send status to server
 					SendStatusClient stt = new SendStatusClient(socket, txtusername.getText(), fff);
 					stt.start();
@@ -310,11 +311,12 @@ public class UserStatusGUI extends JFrame{
 				//Chat to client, that client is server
 				
 				Socket s = new Socket(ip.substring(1),  Integer.parseInt(port) + 1);
+				Socket sFile = new Socket(ip.substring(1),  Integer.parseInt(port) + 4);
 				DataOutputStream ddd = new DataOutputStream(s.getOutputStream());
 				ddd.writeUTF(txtusername.getText());
 				ddd.flush();
 				//ddd.close();
-				ClientChatThread frm = new ClientChatThread(s, userchat);
+				ClientChatThread frm = new ClientChatThread(s, sFile, userchat);
 				frm.start();
 				
 			}catch(Exception e){

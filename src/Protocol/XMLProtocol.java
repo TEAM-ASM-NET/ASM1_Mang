@@ -489,7 +489,6 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileRequestNoAck(){
-
 		try{
 			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -508,7 +507,6 @@ public class XMLProtocol {
 	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
 	            return null;
 	    }
-
 	}
 	public String fileRequestAck(String port){
 		try{

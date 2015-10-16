@@ -24,10 +24,12 @@ public class SharedFile  extends Thread {
 	public Socket socket;
 	boolean running = true;
 	public String filename;
+	private String filepath;
 	private DataInputStream input;
 	private DataOutputStream output;
 	//public boolean accept = false;
     public SharedFile(Socket socket, ClientGUI frame )  {
+
 	// TODO Auto-generated constructor stub
     	this.socket = socket;
     	this.frame = frame;
@@ -45,9 +47,10 @@ public class SharedFile  extends Thread {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			while(running)
+			while(true)
 			{
 					String message = input.readUTF();
+					
 					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
 					doc.getDocumentElement().normalize();
 					
@@ -66,9 +69,10 @@ public class SharedFile  extends Thread {
                         send(new XMLProtocol().fileRequestNoAck());
                     }
                 }
-                else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_ACK")) {
-                	
+                else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_ACK")) {            	
                 	frame.txtrMsg.append("Đối phương đã chấp nhận yêu cầu \n");
+                	sendfile(filepath);
+                	frame.txtrMsg.append("Bạn gửi tập tin thành công \n");
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_NOACK")) {
                 	frame.txtrMsg.append("Đối phương từ chối yêu cầu\n");
@@ -99,9 +103,25 @@ public class SharedFile  extends Thread {
 //                    frame.txtrMsg.append("Bạn đã nhận được một file" );
 //                }
 			}
+
 		}catch (Exception e){
 		}
+			
 		
+	}
+	public File actionChooseFile(){
+
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.showDialog(null, "Select File");
+	    File file = fileChooser.getSelectedFile();
+	    if(file != null){
+            if(!file.getName().isEmpty()){
+                frame.textFieldMess.setText(file.getName());
+                filepath = file.getPath();  
+                
+            }
+	    }
+	    return file;
 	}
 	public void send(String message){
 		try {
@@ -117,6 +137,7 @@ public class SharedFile  extends Thread {
 
 	public void sendfile(String _filepath) { // day
 		try {
+			send( new XMLProtocol().fileDataBegin());
 			@SuppressWarnings("resource")
 			FileInputStream fileshare = new FileInputStream(_filepath);
 			byte[] buffer = new byte[1024];

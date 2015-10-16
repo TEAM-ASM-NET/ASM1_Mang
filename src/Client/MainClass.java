@@ -31,8 +31,8 @@ public class MainClass {
 //			ServerSocket ss = new ServerSocket(6696);
 //			Socket s = ss.accept();
 //			
-//			ClientGUI c1 = new ClientGUI();
-//			c1.setTitle("Tao la server");
+		//	ClientGUI c1 = new ClientGUI();
+			//c1.setTitle("Tao la server");
 //			c1.connect(s);
 //			c1.setVisible(true);
 //

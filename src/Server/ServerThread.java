@@ -82,7 +82,7 @@ public class ServerThread extends Thread{
 			while(true){
 				String message = input.readUTF();
 				long end = System.currentTimeMillis();
-				System.out.println(end);
+				//System.out.println(end);
 				if(message!=null){
 					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
 					doc.getDocumentElement().normalize();
