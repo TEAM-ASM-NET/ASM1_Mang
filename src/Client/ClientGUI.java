@@ -12,6 +12,7 @@ import javax.swing.*;
 public class ClientGUI extends JFrame{
 
 	private static final long serialVersionUID = 1L;
+	private ClientGUI frame = null;
 	/**
 	 * Launch the application.
 	 */
@@ -30,12 +31,10 @@ public class ClientGUI extends JFrame{
 	public void connect(Socket s, String userchat) throws IOException{
 
 		client = s;
-//		reciever = new RecieveMessageThread(this, s);
-//		reciever.userChat = userchat;
-
-//		reciever.start();
-
-        StartShareFile(s);
+		reciever = new RecieveMessageThread(this, s);
+		reciever.userChat = userchat;
+    	reciever.start();
+    	StartShareFile(s);
 	}
 	/**
 	 * Initialize the contents of the frame.
@@ -57,28 +56,14 @@ public class ClientGUI extends JFrame{
 				if (Sender)
 				{
 					long size = file.length();
-					System.out.print(size);
 					if (size<150*1024*1024)
 					{
-
 						share.send(new XMLProtocol().fileRequest(file.getName()));
-						
 						share.send( new XMLProtocol().fileDataBegin());
 						share.sendfile(filepath);
-						System.out.println(share.accept);
-						try {
-							Thread.sleep(3000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						if (share.accept){
-							share.accept=false;
-							share.send(new XMLProtocol().fileDataEnd());
-							System.out.println("Da gui");
-						}
+						//share.send(new XMLProtocol().fileDataEnd());
 						textFieldMess.setText("");
-						txtrMsg.append("File shared success\n");
+						txtrMsg.append("Bạn gửi tập tin thành công \n");
 						Sender = false;
 					}
 					else 
@@ -150,7 +135,8 @@ public class ClientGUI extends JFrame{
 			}
 		});
 		springLayout.putConstraint(SpringLayout.EAST, btnOnline, 0, SpringLayout.EAST, scrPnlMSg);
-		getContentPane().add(btnOnline);	
+		getContentPane().add(btnOnline);
+		frame = this;
 	}	
 	public void actionChooseFile(){
 
@@ -161,14 +147,14 @@ public class ClientGUI extends JFrame{
             if(!file.getName().isEmpty()){
             	Sender = true;
                 textFieldMess.setText(file.getName());
-                filepath = file.getPath();;   
+                filepath = file.getPath();  
                 
             }
 	    }
 	}
 	
 	public void StartShareFile( Socket socket) {
-			share = new SharedFile(socket);
+			share = new SharedFile(socket, frame);
 			share.start();
 	}
 
@@ -200,15 +186,14 @@ public class ClientGUI extends JFrame{
   	public Socket client;
     //public int port;
 
-    public String username = "";
 
 
   //  public Thread clientThread;
     public File file;
-    private static DataInputStream input;
-    private static DataOutputStream output;
+
     public String filepath;
     public boolean Sender = false;
+
 
   
 }

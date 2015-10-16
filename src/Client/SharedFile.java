@@ -20,16 +20,17 @@ import Protocol.XMLProtocol;
 
 public class SharedFile  extends Thread {
 	
-	ClientGUI frame;
-	Socket socket;
+	ClientGUI frame = null;
+	public Socket socket;
 	boolean running = true;
 	public String filename;
 	private DataInputStream input;
 	private DataOutputStream output;
-	public boolean accept = false;
-    public SharedFile(Socket socket )  {
+	//public boolean accept = false;
+    public SharedFile(Socket socket, ClientGUI frame )  {
 	// TODO Auto-generated constructor stub
     	this.socket = socket;
+    	this.frame = frame;
     }
  
 	@Override
@@ -49,13 +50,12 @@ public class SharedFile  extends Thread {
 					String message = input.readUTF();
 					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
 					doc.getDocumentElement().normalize();
-					System.out.println(message);
 					
 				if(doc.getDocumentElement().getNodeName().equals("FILE_REQ")) {
 					
                     filename = doc.getDocumentElement().getFirstChild().getTextContent();
                    
-                    int choise = JOptionPane.showConfirmDialog(null, " want to send " + filename + " to you?", "Message",
+                    int choise = JOptionPane.showConfirmDialog(null, "Đối phương muốn gửi tập tin " + filename + " đến bạn?", "Message",
 					        JOptionPane.YES_NO_OPTION);
                     if(choise == JOptionPane.YES_OPTION) {
                     
@@ -67,10 +67,11 @@ public class SharedFile  extends Thread {
                     }
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_ACK")) {
-                	frame.txtrMsg.setText("Đối phương đã chấp nhận yêu cầu");
+                	
+                	frame.txtrMsg.append("Đối phương đã chấp nhận yêu cầu \n");
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_NOACK")) {
-                	frame.txtrMsg.setText("Đối phương từ chối yêu cầu");
+                	frame.txtrMsg.append("Đối phương từ chối yêu cầu\n");
                     frame.textFieldMess.setText("");
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_BEGIN")) {
@@ -85,23 +86,20 @@ public class SharedFile  extends Thread {
                         byte[] buffer = new byte[1024];
                         int count;
                         while((count = input.read(buffer)) >= 0 ){
-                        	System.out.println("hfsk"+count);
                             Out.write(buffer, 0, count);
-                            Out.flush();
+                           // Out.flush();
                             if(count< 1024) break;
                         }
-                        System.out.println("hfhsadkfhaslkhflsda"+count);
-                        accept = true;
-                       // Out.flush();
+                        
+                        Out.flush();
+                        frame.txtrMsg.append("Bạn đã nhận được một file\n" );
                     }
                 }
-                else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_END")) {
-                    frame.txtrMsg.append("Bạn đã nhận được một file" );
-                }
+//                else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_END")) {
+//                    frame.txtrMsg.append("Bạn đã nhận được một file" );
+//                }
 			}
 		}catch (Exception e){
-			System.out.println("LOi khong ta");
-			running=false;
 		}
 		
 	}
