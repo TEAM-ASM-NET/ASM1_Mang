@@ -99,9 +99,6 @@ public class SharedFile  extends Thread {
                         frame.txtrMsg.append("Bạn đã nhận được một file\n" );
                     }
                 }
-//                else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_END")) {
-//                    frame.txtrMsg.append("Bạn đã nhận được một file" );
-//                }
 			}
 
 		}catch (Exception e){
