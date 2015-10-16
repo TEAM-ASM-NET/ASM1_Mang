@@ -25,9 +25,9 @@ public class ClientGUI extends JFrame{
 		
 	}
 	public void connect(Socket s) throws IOException{
-		client = s;
-		reciever = new RecieveMessageThread(this, s);
-		reciever.start();
+//		client = s;
+//		reciever = new RecieveMessageThread(this, s);
+//		reciever.start();
         StartShareFile(s);
 		
 	}
@@ -53,20 +53,23 @@ public class ClientGUI extends JFrame{
 				if (Sender)
 				{
 					long size = file.length();
+					System.out.print(size);
 					if (size<150*1024*1024)
 					{
+						share.send(new XMLProtocol().fileRequest(file.getName()));
+						
 						share.send( new XMLProtocol().fileDataBegin());
 						share.sendfile(filepath);
 						share.send(new XMLProtocol().fileDataEnd());
 						textFieldMess.setText("");
-						txtrMsg.append("File shared success\n");
+						txtrMsg.setText("File shared success\n");
 						Sender = false;
 					}
 					else 
 					{
 						Sender = false;
 						textFieldMess.setText("");
-						txtrMsg.append("File is size too large\n");
+						txtrMsg.setText("File is size too large\n");
 					}
 							
 				}
@@ -139,8 +142,7 @@ public class ClientGUI extends JFrame{
             	Sender = true;
                 textFieldMess.setText(file.getName());
                 filepath = file.getPath();;   
-                share.send(new XMLProtocol().fileRequest("FILE_REQ"));
-   
+                
             }
 	    }
 	}
@@ -176,7 +178,7 @@ public class ClientGUI extends JFrame{
   //private JFrame frame;
   	public Socket client;
     //public int port;
-    public String username = "";
+    public String username = null;
   //  public Thread clientThread;
     public File file;
     private static DataInputStream input;

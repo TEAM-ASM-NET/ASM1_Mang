@@ -403,7 +403,7 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileRequestNoAck(){
-		return "/FILE_REQ_NOACK";
+		return "</FILE_REQ_NOACK>";
 	}
 	public String fileRequestAck(String port){
 		try{
@@ -429,7 +429,24 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileDataBegin(){
-		return "</FILE_DATA_BEGIN> ";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("FILE_DATA_BEGIN");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 	public String fileData(String content){
 		try{
@@ -453,6 +470,23 @@ public class XMLProtocol {
 	    }
 	}
 	public String fileDataEnd(){
-		return "</FILE_DATA_END>";
+		try{
+			 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+	         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	         Document doc = docBuilder.newDocument();
+	         
+	         Element file = doc.createElement("FILE_DATA_END");
+	         doc.appendChild(file);
+	        
+	         return documentToString(doc);
+		}
+		catch(ParserConfigurationException | DOMException ex) {
+	            ex.printStackTrace();
+	            return null;
+	     } 
+		catch (Exception ex) {
+	            Logger.getLogger(XMLProtocol.class.getName()).log(Level.SEVERE, null, ex);
+	            return null;
+	    }
 	}
 }

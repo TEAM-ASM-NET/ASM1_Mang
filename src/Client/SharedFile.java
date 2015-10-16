@@ -10,6 +10,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 
+
+
+
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -20,49 +23,60 @@ public class SharedFile  extends Thread {
 	ClientGUI frame;
 	Socket socket;
 	boolean running = true;
-	boolean check =false;
-	XMLProtocol protocol;
+	public String filename;
 	private DataInputStream input;
-	private ObjectOutputStream output;
+	private DataOutputStream output;
 	//public boolean accept = true;
     public SharedFile(Socket socket )  {
 	// TODO Auto-generated constructor stub
-    	this.socket=socket;
-    	protocol = new XMLProtocol();
+    	this.socket = socket;
     }
  
 	@Override
 	public void run() {
 		// TODO Auto-generated method stud
-		int choise = 0;
+		
 		try{
-			output = new ObjectOutputStream(socket.getOutputStream());
-	        //output.flush();
-	       // input = new DataInputStream(socket.getInputStream());
+			output = new DataOutputStream(socket.getOutputStream());
+	        output.flush();
 	        
+	        input = new DataInputStream(socket.getInputStream());
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			
-				System.out.print("Lối");
-				
-				
-				if(frame.Sender) {
-					System.out.print("Lối2");
-					choise = JOptionPane.showConfirmDialog(null, frame.username + " want to send " + frame.filepath + " to you?", "Message",
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			while(true)
+			{
+					String message = input.readUTF();
+					
+					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
+					doc.getDocumentElement().normalize();
+					
+				if(doc.getDocumentElement().getNodeName().equals("FILE_REQ")) {
+					
+                    filename = doc.getDocumentElement().getFirstChild().getTextContent();
+                   
+                    int choise = JOptionPane.showConfirmDialog(null, " want to send " + filename + " to you?", "Message",
 					        JOptionPane.YES_NO_OPTION);
                     if(choise == JOptionPane.YES_OPTION) {
-                    	send(protocol.fileRequest("FILE_REQ_ACK"));
+                    
+                        send(new XMLProtocol().fileRequestAck("6696"));
+                        
                     }
                     else {
-                    	JOptionPane.showMessageDialog(null, frame.username + " dosen't accept");
-                        frame.textFieldMess.setText("");
-                        send(protocol.fileRequestNoAck());
+                        send(new XMLProtocol().fileRequestNoAck());
                     }
                 }
-                if(check) {
-                    JOptionPane.showMessageDialog(null, frame.username + " accept");
-                    System.out.println("Ingoing : file");
+                else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_ACK")) {
+                    //JOptionPane.showMessageDialog(null,  " accept");
+                }
+                else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_NOACK")) {
+                   // JOptionPane.showMessageDialog(null,  " dosen't accept");
+                   frame.textFieldMess.setText("");
+                }
+                else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_BEGIN")) {
                     String saveTo = "";
                     JFileChooser jf = new JFileChooser();
-                    jf.setSelectedFile(new File(frame.filepath));
+                    jf.setSelectedFile(new File(filename));
                     int returnVal = jf.showSaveDialog(frame);
                     saveTo = jf.getSelectedFile().getPath();
                     @SuppressWarnings("resource")
@@ -75,21 +89,21 @@ public class SharedFile  extends Thread {
                         }
                         Out.flush();
                     }
-                    check=false;
-                }   
-              if(choise==JOptionPane.YES_OPTION) {
+                }
+                else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_END")) {
+                	System.out.print("aaaaaa"+doc.getDocumentElement().getNodeName());
                 	frame.textFieldMess.setText("");
-                    frame.txtrMsg.append("Ban da nhan duoc mot file tu" + frame.username);
+                    frame.txtrMsg.setText("Ban da nhan duoc mot file tu" );
                 }
 			}
+		}catch (Exception e){
 			
-		catch (Exception e){
-			running =false;
 		}
 		
 	}
 	public void send(String message){
 		try {
+			
 			output.writeUTF(message);
 			output.flush();
 		} catch (IOException e) {
@@ -98,7 +112,7 @@ public class SharedFile  extends Thread {
 		}
 		
 	}
-	public void sendfile(String _filepath) {
+	public void sendfile(String _filepath) { // day
 		try {
 			
 			@SuppressWarnings("resource")
@@ -109,7 +123,6 @@ public class SharedFile  extends Thread {
 			      output.write(buffer, 0, count);
 	           }             
 		      output.flush();
-		      check=true;
 	    } catch (IOException ex) {
 			 System.out.println("Error: Can't send");
 	    }
