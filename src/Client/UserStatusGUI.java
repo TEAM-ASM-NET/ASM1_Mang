@@ -203,8 +203,7 @@ public class UserStatusGUI extends JFrame{
 				//Recieve list user online from server
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
-				JOptionPane.showMessageDialog(null, lstUser);
-				JOptionPane.showMessageDialog(null, protocol.loginDeny());
+				
 				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
 					
 					UpdateJList(lstUser);
