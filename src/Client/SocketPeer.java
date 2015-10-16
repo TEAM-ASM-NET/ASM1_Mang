@@ -9,10 +9,15 @@ import Protocol.XMLProtocol;
 
 public class SocketPeer implements Runnable{
 
-	public SocketPeer(int port) throws Exception{
+	public SocketPeer(int port){
 		// TODO Auto-generated constructor stub
-		server = new ServerSocket(port);
+		try{
+		serverChat = new ServerSocket(port);
+		serverFile = new ServerSocket(port + 3);
 		this.port = port;
+		}catch(Exception e){
+			System.out.print("socket perr ham tao\n"+e.getMessage());
+		}
 	}
 	@Override
 	public void run() {
@@ -20,7 +25,9 @@ public class SocketPeer implements Runnable{
 		try{
 			while (true)
 			{
-				socket = server.accept();
+				socket = serverChat.accept();
+				socketFile = serverFile.accept();
+				
 				DataInputStream ddd = new DataInputStream(socket.getInputStream());
 				String userChat = ddd.readUTF();
 				DataOutputStream buff = new DataOutputStream(socket.getOutputStream());
@@ -36,7 +43,7 @@ public class SocketPeer implements Runnable{
 					_result = pro.chatAccept();
 					buff.writeUTF(_result);
 					ClientGUI frm = new ClientGUI();
-					frm.connect(socket, userChat);
+					frm.connect(socket, socketFile, userChat);
 					frm.setTitle("Chat with: " + userChat);
 					frm.setVisible(true);
 					
@@ -63,14 +70,18 @@ public class SocketPeer implements Runnable{
 		if (t != null){
 			try{
 				socket.close();
-				server.close();
+				serverChat.close();
+				serverFile.close();
 			}catch(Exception e){
 				System.out.println("Loi o stop PeerThread: " + e.getMessage());
 			}
 		}
 	}
 	private Socket socket = null;
-	private ServerSocket server = null;
+	private Socket socketFile = null;
+	private ServerSocket serverChat = null;
+	private ServerSocket serverFile = null;
+	
 	//private BufferedWriter buff = null;
 	public int port;
 	private Thread t = null;

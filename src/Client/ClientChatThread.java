@@ -7,9 +7,10 @@ import Protocol.XMLProtocol;
 
 public class ClientChatThread implements Runnable{
 
-	public ClientChatThread(Socket s, String userchat) {
+	public ClientChatThread(Socket s, Socket sFile, String userchat) {
 		// TODO Auto-generated constructor stub
 		socket = s;
+		this.sFile = sFile;
 		userChat = userchat;
 	}
 	@Override
@@ -22,7 +23,7 @@ public class ClientChatThread implements Runnable{
 			System.out.println(aod + "   aid");
 			if (!aod.equals(proto.chatDeny())){
 				ClientGUI client = new ClientGUI();
-				client.connect(socket, userChat);
+				client.connect(socket,sFile, userChat);
 				client.setVisible(true);
 				client.setTitle("Chat with " + userChat);
 			}
@@ -43,5 +44,6 @@ public class ClientChatThread implements Runnable{
 	
 	Thread t = null;
 	Socket socket = null;
+	Socket sFile;
 	String userChat;
 }

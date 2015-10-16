@@ -204,14 +204,15 @@ public class UserStatusGUI extends JFrame{
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
 				
-				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
+				if (!lstUser.equals(protocol.registerDeny()) || !lstUser.equals(protocol.loginDeny())){
 					
 					UpdateJList(lstUser);
 					//Create listenner to accept other chat
+					JOptionPane.showMessageDialog(null, "tren role stt");
 					
 					roleServer = new SocketPeer(socket.getLocalPort() + 1);
 					roleServer.start();
-					
+					JOptionPane.showMessageDialog(null, "duoi role");
 					//Send status to server
 					SendStatusClient stt = new SendStatusClient(socket, txtusername.getText(), fff);
 					stt.start();
@@ -310,11 +311,12 @@ public class UserStatusGUI extends JFrame{
 				//Chat to client, that client is server
 				
 				Socket s = new Socket(ip.substring(1),  Integer.parseInt(port) + 1);
+				Socket sFile = new Socket(ip.substring(1),  Integer.parseInt(port) + 4);
 				DataOutputStream ddd = new DataOutputStream(s.getOutputStream());
 				ddd.writeUTF(txtusername.getText());
 				ddd.flush();
 				//ddd.close();
-				ClientChatThread frm = new ClientChatThread(s, userchat);
+				ClientChatThread frm = new ClientChatThread(s, sFile, userchat);
 				frm.start();
 				
 			}catch(Exception e){
