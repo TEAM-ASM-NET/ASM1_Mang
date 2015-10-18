@@ -2,7 +2,6 @@ package Client;
 
 import Protocol.*;
 
-
 import java.io.*;
 import java.net.*;
 import java.awt.event.*;
@@ -20,10 +19,10 @@ public class ClientGUI extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	public ClientGUI() {
+	public ClientGUI(UserStatusGUI frmStt) {
 		
 		initialize();
-		
+		this.frmStt = frmStt;
 		
 	}
 	public void connect(Socket s, Socket sFile, String userchat) throws IOException{
@@ -120,7 +119,8 @@ public class ClientGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.EAST, btnOnline, -10, SpringLayout.EAST, getContentPane());
 		btnOnline.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				frmStt.setState(JFrame.NORMAL);
+				frmStt.setVisible(true);
 			}
 		});
 		getContentPane().add(btnOnline);
@@ -168,7 +168,8 @@ public class ClientGUI extends JFrame{
   	public Socket client;
     public File file;
     public boolean Sender = false;
-
+    
+    private UserStatusGUI frmStt;
 
   
 }

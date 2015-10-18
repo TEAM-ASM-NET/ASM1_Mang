@@ -40,7 +40,7 @@ public class ServerThread extends Thread{
 	}
 	private int checkLogin(String userName, String pass){
 		for(int i = table.getRowCount()-1;i>=0;i--)
-			if(table.getValueAt(i, 0).equals(userName) && table.getValueAt(i, 1).equals(pass)){
+			if(table.getValueAt(i, 0).equals(userName) && table.getValueAt(i, 1).equals(pass) && table.getValueAt(i, 2)==""){
 				return i;
 				
 			}

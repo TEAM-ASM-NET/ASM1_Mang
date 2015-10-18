@@ -28,7 +28,6 @@ public class SendStatusClient implements Runnable{
 				recieve = new DataInputStream(socket.getInputStream());
 				
 				String lstUser = recieve.readUTF();
-				//JOptionPane.showMessageDialog(null, lstUser + "DUoi read");
 				frm.UpdateJList(lstUser);
 				Thread.sleep(10000);
 			}
@@ -50,5 +49,4 @@ public class SendStatusClient implements Runnable{
 	Socket socket = null;
 	String username;
 	UserStatusGUI frm;
-//	static CountDownLatch countDownLatch = new CountDownLatch(1);
 }
