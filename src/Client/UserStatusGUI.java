@@ -8,14 +8,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.net.*;
 import java.io.*;
-
 import javax.swing.table.*;
-
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-@SuppressWarnings("serial")
 public class UserStatusGUI extends JFrame{
 	private UserStatusGUI fff;
 	private JTextField txtHostname;
@@ -26,8 +23,7 @@ public class UserStatusGUI extends JFrame{
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-				if (btnLogout.isEnabled())
-					Logout();
+				Logout();
 			}
 		});
 		setSize(new Dimension(442, 362));
@@ -35,7 +31,7 @@ public class UserStatusGUI extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//socket = s;
 		Initially();
-		fff  = this;
+		fff  =this;
 	}
 	
 	private void Initially(){
@@ -153,7 +149,7 @@ public class UserStatusGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnConnect);
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Logout();
+				
 				System.exit(0);
 			}
 		});
@@ -186,7 +182,6 @@ public class UserStatusGUI extends JFrame{
 
 	}
 
-	@SuppressWarnings("deprecation")
 	private void LoginOrResgister(boolean isLogin){
 		
 		if (!txtusername.getText().isEmpty() && !pwdTxtpass.getText().isEmpty()){
@@ -209,15 +204,16 @@ public class UserStatusGUI extends JFrame{
 				//Recieve list user online from server
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
-				//JOptionPane.showMessageDialog(null, lstUser);
+				
 				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
 					
 					UpdateJList(lstUser);
-
+					//Create listenner to accept other chat
+					JOptionPane.showMessageDialog(null, "tren role stt");
 					
-					roleServer = new SocketPeer(socket.getLocalPort() + 1, fff);
+					roleServer = new SocketPeer(socket.getLocalPort() + 1);
 					roleServer.start();
-
+					JOptionPane.showMessageDialog(null, "duoi role");
 					//Send status to server
 					SendStatusClient stt = new SendStatusClient(socket, txtusername.getText(), fff);
 					stt.start();
@@ -236,11 +232,11 @@ public class UserStatusGUI extends JFrame{
 		    		pwdTxtpass.setEnabled(false);
 				}
 				else 
-					JOptionPane.showMessageDialog(this, "Register/Login fail. Check your username or password");
+					JOptionPane.showMessageDialog(this, lstUser + "Register/Login fail. Check your username or password");
 			
 			}
 			catch(Exception e){
-				
+				System.out.println("kkkkk"+e.getMessage() + " vv " + e.getCause());
 			}
 		}
 		else {
@@ -251,7 +247,7 @@ public class UserStatusGUI extends JFrame{
 		try{
 			
 			XMLProtocol protocol = new XMLProtocol();
-			String stt = protocol.logOut(txtusername.getText(), "OFFLINE");
+			String stt = protocol.alive(username, "OFFLINE");
 			DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 			dout.writeUTF(stt);
 			dout.flush();
@@ -320,11 +316,8 @@ public class UserStatusGUI extends JFrame{
 				DataOutputStream ddd = new DataOutputStream(s.getOutputStream());
 				ddd.writeUTF(txtusername.getText());
 				ddd.flush();
-
-
 				//ddd.close();
-				ClientChatThread frm = new ClientChatThread(s, sFile, userchat, fff);
-
+				ClientChatThread frm = new ClientChatThread(s, sFile, userchat);
 				frm.start();
 				
 			}catch(Exception e){
@@ -340,16 +333,15 @@ public class UserStatusGUI extends JFrame{
 				tb.removeAllElements();
 			}catch(Exception e){}
 			//JOptionPane.showMessageDialog(null, lstUser);
+		XMLProtocol protocol = new XMLProtocol();
+		table = protocol.parseString(lstUser);
+		DefaultListModel<String> tmp = new DefaultListModel<String>();
 		
-			XMLProtocol protocol = new XMLProtocol();
-			table = protocol.parseString(lstUser);
-			DefaultListModel<String> tmp = new DefaultListModel<String>();
-			
-			list.setModel(tmp);
-			
-			for (int i = 0; i < table.getRowCount(); i++){
-				tmp.addElement(table.getValueAt(i, 0).toString());
-			}
+		list.setModel(tmp);
+		
+		for (int i = 0; i < table.getRowCount(); i++){
+			tmp.addElement(table.getValueAt(i, 0).toString());
+		}
 		}
 		catch(Exception e){
 			System.out.println("Cann't take list user");
@@ -366,7 +358,7 @@ public class UserStatusGUI extends JFrame{
 	JButton btnStartChat;
 	
 	Socket socket = null;
-	//public String username = "";
+	public String username = "";
 	
 	private DefaultTableModel table = null;
 	private SocketPeer roleServer;

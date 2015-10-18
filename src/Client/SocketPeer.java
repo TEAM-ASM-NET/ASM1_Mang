@@ -1,23 +1,20 @@
 package Client;
 
-
+import java.awt.Dialog;
 import java.io.*;
 import java.net.*;
-
 import javax.swing.*;
 
 import Protocol.XMLProtocol;
 
 public class SocketPeer implements Runnable{
 
-	public SocketPeer(int port, UserStatusGUI frmStt){
+	public SocketPeer(int port){
 		// TODO Auto-generated constructor stub
 		try{
 		serverChat = new ServerSocket(port);
 		serverFile = new ServerSocket(port + 3);
 		this.port = port;
-		this.frmstt = frmStt;
-		
 		}catch(Exception e){
 			System.out.print("socket perr ham tao\n"+e.getMessage());
 		}
@@ -45,7 +42,7 @@ public class SocketPeer implements Runnable{
 				if (result == 0){
 					_result = pro.chatAccept();
 					buff.writeUTF(_result);
-					ClientGUI frm = new ClientGUI(frmstt);
+					ClientGUI frm = new ClientGUI();
 					frm.connect(socket, socketFile, userChat);
 					frm.setTitle("Chat with: " + userChat);
 					frm.setVisible(true);
@@ -88,5 +85,4 @@ public class SocketPeer implements Runnable{
 	//private BufferedWriter buff = null;
 	public int port;
 	private Thread t = null;
-	UserStatusGUI frmstt;
 }

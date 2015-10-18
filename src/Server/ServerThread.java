@@ -40,7 +40,7 @@ public class ServerThread extends Thread{
 	}
 	private int checkLogin(String userName, String pass){
 		for(int i = table.getRowCount()-1;i>=0;i--)
-			if(table.getValueAt(i, 0).equals(userName) && table.getValueAt(i, 1).equals(pass) && table.getValueAt(i, 2)==""){
+			if(table.getValueAt(i, 0).equals(userName) && table.getValueAt(i, 1).equals(pass)){
 				return i;
 				
 			}
@@ -60,15 +60,16 @@ public class ServerThread extends Thread{
 		for(int i = table.getRowCount()-1; i>=0; i--)
 		{
 			if(table.getValueAt(i, 0).equals(userName))
-			{	
+			{	System.out.println("bn "+table.getValueAt(i, 2)+"gb" +table.getValueAt(i, 3));
 				table.setValueAt("", i, 2);
 				table.setValueAt("", i, 3);
+				System.out.println("bn "+table.getValueAt(i, 2)+"gb" +table.getValueAt(i, 3));
 				break;
 			}
 		}
 		this.close();
 	}
-	@SuppressWarnings({ "deprecation", "unused" })
+	@SuppressWarnings("deprecation")
 	@Override
 	public void run(){
 		form.txtArea.append("\nServer Thread "+ ID +" running.");
@@ -82,7 +83,7 @@ public class ServerThread extends Thread{
 			while(true){
 				String message = input.readUTF();
 				long end = System.currentTimeMillis();
-				//System.out.println(end);
+				System.out.println(message);
 				if(message!=null){
 					Document doc = docBuilder.parse(new InputSource(new StringReader(message)));
 					doc.getDocumentElement().normalize();
@@ -106,6 +107,7 @@ public class ServerThread extends Thread{
 					}
 					else if(doc.getDocumentElement().getNodeName().equals("PEER_KEEP_ALIVE")){
 						if(!doc.getElementsByTagName("STATUS").item(0).getTextContent().equals("ALIVE")){
+							System.out.println("Co vo day ko");
 							this.remote(doc.getElementsByTagName("USER_NAME").item(0).getTextContent());
 							this.close();
 							this.stop();

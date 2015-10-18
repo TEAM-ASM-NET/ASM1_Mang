@@ -27,6 +27,7 @@ public class SharedFile  extends Thread {
 	private String filepath;
 	private DataInputStream input;
 	private DataOutputStream output;
+	//public boolean accept = false;
     public SharedFile(Socket socket, ClientGUI frame )  {
 
 	// TODO Auto-generated constructor stub
@@ -90,18 +91,20 @@ public class SharedFile  extends Thread {
                         int count;
                         while((count = input.read(buffer)) >= 0 ){
                             Out.write(buffer, 0, count);
-                           // Out.flush();
                             if(count< 1024) break;
                         }
+                        
                         Out.flush();
                         frame.txtrMsg.append("Bạn đã nhận được một file\n" );
                     }
-                }	
+                }
 			}
+
 		}catch (Exception e){
 		}
+			
+		
 	}
-	
 	public File actionChooseFile(){
 
 		JFileChooser fileChooser = new JFileChooser();
@@ -128,7 +131,7 @@ public class SharedFile  extends Thread {
 		
 	}
 
-	public void sendfile(String _filepath) { 
+	public void sendfile(String _filepath) { // day
 		try {
 			send( new XMLProtocol().fileDataBegin());
 			@SuppressWarnings("resource")

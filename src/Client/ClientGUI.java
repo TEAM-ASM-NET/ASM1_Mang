@@ -1,6 +1,7 @@
 package Client;
 
 import Protocol.*;
+import Server.Server;
 
 import java.io.*;
 import java.net.*;
@@ -19,10 +20,10 @@ public class ClientGUI extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	public ClientGUI(UserStatusGUI frmStt) {
+	public ClientGUI() {
 		
 		initialize();
-		this.frmStt = frmStt;
+		
 		
 	}
 	public void connect(Socket s, Socket sFile, String userchat) throws IOException{
@@ -55,19 +56,24 @@ public class ClientGUI extends JFrame{
 					if (size<150*1024*1024)
 					{
 						share.send(new XMLProtocol().fileRequest(file.getName()));
+						
+						//share.sendfile(filepath);
 						textFieldMess.setText("");
+						//txtrMsg.append("Bạn gửi tập tin thành công \n");
 						Sender = false;
 					}
 					else 
 					{
 						Sender = false;
 						textFieldMess.setText("");
-						txtrMsg.append("File is size too large\n");
-					}			
+						//txtrMsg.append("File is size too large\n");
+					}
+							
 				}
 				else{
 					sendMessage();
 				}
+
 			}
 		});
 		this.getContentPane().add(btnSend);
@@ -119,8 +125,7 @@ public class ClientGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.EAST, btnOnline, -10, SpringLayout.EAST, getContentPane());
 		btnOnline.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				frmStt.setState(JFrame.NORMAL);
-				frmStt.setVisible(true);
+				
 			}
 		});
 		getContentPane().add(btnOnline);
@@ -130,11 +135,23 @@ public class ClientGUI extends JFrame{
 
 		file = share.actionChooseFile();
 		Sender = true;
+//		JFileChooser fileChooser = new JFileChooser();
+//		fileChooser.showDialog(this, "Select File");
+//	    file = fileChooser.getSelectedFile();
+//	    if(file != null){
+//            if(!file.getName().isEmpty()){
+//            	Sender = true;
+//                textFieldMess.setText(file.getName());
+//                filepath = file.getPath();  
+//                
+//            }
+//	    }
 	}
 	
 	public void StartShareFile( Socket socket) {
 
 		try{
+			//Socket shareSocket = new Socket(socket.getLocalAddress(), socket.getLocalPort());
 			share = new SharedFile(socket,frame);
 			share.start();
 		}catch(Exception e){
@@ -152,6 +169,7 @@ public class ClientGUI extends JFrame{
 	{
 		addMessage(textFieldMess.getText(), "Me");
 		sender = new SendMessageThread(client, textFieldMess.getText());
+		//System.out.println("Msg trong GUI: " + textFieldMess.getText());
 		sender.start();
 		textFieldMess.setText("");
 	}
@@ -165,11 +183,17 @@ public class ClientGUI extends JFrame{
     SharedFile share;
     private SendMessageThread sender = null;
     private RecieveMessageThread reciever = null;
+  //private JFrame frame;
   	public Socket client;
+    //public int port;
+
+
+  //  public Thread clientThread;
     public File file;
+
+    public String filepath;
     public boolean Sender = false;
-    
-    private UserStatusGUI frmStt;
+
 
   
 }
