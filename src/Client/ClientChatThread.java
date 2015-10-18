@@ -7,11 +7,12 @@ import Protocol.XMLProtocol;
 
 public class ClientChatThread implements Runnable{
 
-	public ClientChatThread(Socket s, Socket sFile, String userchat) {
+	public ClientChatThread(Socket s, Socket sFile, String userchat, UserStatusGUI frmstt) {
 		// TODO Auto-generated constructor stub
 		socket = s;
 		this.sFile = sFile;
 		userChat = userchat;
+		frmStt = frmstt;
 	}
 	@Override
 	public void run() {
@@ -20,12 +21,12 @@ public class ClientChatThread implements Runnable{
 			DataInputStream dip = new DataInputStream(socket.getInputStream());
 			String aod = dip.readUTF();
 			XMLProtocol proto = new XMLProtocol();
-			System.out.println(aod + "   aid");
+			
 			if (!aod.equals(proto.chatDeny())){
-				ClientGUI client = new ClientGUI();
+				ClientGUI client = new ClientGUI(frmStt);
 				client.connect(socket,sFile, userChat);
 				client.setVisible(true);
-				client.setTitle("Chat with " + userChat);
+				client.setTitle("Chat with: " + userChat);
 			}
 			else socket.close();
 			
@@ -46,4 +47,5 @@ public class ClientChatThread implements Runnable{
 	Socket socket = null;
 	Socket sFile;
 	String userChat;
+	UserStatusGUI frmStt;
 }

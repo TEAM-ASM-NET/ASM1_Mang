@@ -18,15 +18,13 @@ public class SendMessageThread extends Thread{
 	@Override
 	public void run() {
 		try {
-			//sender = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			
 			sender = new DataOutputStream(socket.getOutputStream());
-			//while (true){
 			
 				String send = protocol.messageToXML(msg);
 				sender.writeUTF(send + "\n");
 				sender.flush();
-			//}
-				//System.out.println("Tin nhan send: " + send);
+			
 		}catch (Exception e){
 			
 		}

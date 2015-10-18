@@ -58,7 +58,7 @@ public class SharedFile  extends Thread {
 					
                     filename = doc.getDocumentElement().getFirstChild().getTextContent();
                    
-                    int choise = JOptionPane.showConfirmDialog(null, "Đối phương muốn gửi tập tin " + filename + " đến bạn?", "Message",
+                    int choise = JOptionPane.showConfirmDialog(null, "Doi phuong muon gui tap tin " + filename + " den ban?", "Message",
 					        JOptionPane.YES_NO_OPTION);
                     if(choise == JOptionPane.YES_OPTION) {
                     
@@ -70,12 +70,12 @@ public class SharedFile  extends Thread {
                     }
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_ACK")) {            	
-                	frame.txtrMsg.append("Đối phương đã chấp nhận yêu cầu \n");
+                	frame.txtrMsg.append("Doi phuong da chap nhan yeu cau \n");
                 	sendfile(filepath);
-                	frame.txtrMsg.append("Bạn gửi tập tin thành công \n");
+                	frame.txtrMsg.append("Ban da gui tap tin thanh cong\n");
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_REQ_NOACK")) {
-                	frame.txtrMsg.append("Đối phương từ chối yêu cầu\n");
+                	frame.txtrMsg.append("Doi phuong tu choi yeu cau\n");
                     frame.textFieldMess.setText("");
                 }
                 else if(doc.getDocumentElement().getNodeName().equals("FILE_DATA_BEGIN")) {
@@ -95,7 +95,7 @@ public class SharedFile  extends Thread {
                         }
                         
                         Out.flush();
-                        frame.txtrMsg.append("Bạn đã nhận được một file\n" );
+                        frame.txtrMsg.append("Ban da nhan duoc file\n" );
                     }
                 }
 			}

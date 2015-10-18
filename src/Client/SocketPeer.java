@@ -9,7 +9,7 @@ import Protocol.XMLProtocol;
 
 public class SocketPeer implements Runnable{
 
-	public SocketPeer(int port){
+	public SocketPeer(int port, UserStatusGUI frmStt){
 		// TODO Auto-generated constructor stub
 		try{
 		serverChat = new ServerSocket(port);
@@ -18,6 +18,7 @@ public class SocketPeer implements Runnable{
 		}catch(Exception e){
 			System.out.print("socket perr ham tao\n"+e.getMessage());
 		}
+		this.frmstt = frmStt;
 	}
 	@Override
 	public void run() {
@@ -42,7 +43,7 @@ public class SocketPeer implements Runnable{
 				if (result == 0){
 					_result = pro.chatAccept();
 					buff.writeUTF(_result);
-					ClientGUI frm = new ClientGUI();
+					ClientGUI frm = new ClientGUI(frmstt);
 					frm.connect(socket, socketFile, userChat);
 					frm.setTitle("Chat with: " + userChat);
 					frm.setVisible(true);
@@ -85,4 +86,5 @@ public class SocketPeer implements Runnable{
 	//private BufferedWriter buff = null;
 	public int port;
 	private Thread t = null;
+	UserStatusGUI frmstt;
 }
