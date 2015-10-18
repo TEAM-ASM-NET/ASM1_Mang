@@ -150,6 +150,7 @@ public class UserStatusGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnConnect);
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Logout();
 				System.exit(0);
 			}
 		});
@@ -204,14 +205,14 @@ public class UserStatusGUI extends JFrame{
 				//Recieve list user online from server
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
-				JOptionPane.showMessageDialog(null, lstUser);
+				//JOptionPane.showMessageDialog(null, lstUser);
 				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
 					
 					UpdateJList(lstUser);
 					//Create listenner to accept other chat
 					//JOptionPane.showMessageDialog(null, "tren role stt");
 					
-					roleServer = new SocketPeer(socket.getLocalPort() + 1);
+					roleServer = new SocketPeer(socket.getLocalPort() + 1, fff);
 					roleServer.start();
 					//JOptionPane.showMessageDialog(null, "duoi role");
 					//Send status to server
@@ -232,7 +233,7 @@ public class UserStatusGUI extends JFrame{
 		    		pwdTxtpass.setEnabled(false);
 				}
 				else 
-					JOptionPane.showMessageDialog(this, lstUser + "Register/Login fail. Check your username or password");
+					JOptionPane.showMessageDialog(this, "Register/Login fail. Check your username or password");
 			
 			}
 			catch(Exception e){
@@ -247,7 +248,7 @@ public class UserStatusGUI extends JFrame{
 		try{
 			
 			XMLProtocol protocol = new XMLProtocol();
-			String stt = protocol.logOut(username, "OFFLINE");
+			String stt = protocol.logOut(txtusername.getText(), "OFFLINE");
 			DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 			dout.writeUTF(stt);
 			dout.flush();
@@ -317,7 +318,7 @@ public class UserStatusGUI extends JFrame{
 				ddd.writeUTF(txtusername.getText());
 				ddd.flush();
 				//ddd.close();
-				ClientChatThread frm = new ClientChatThread(s, sFile, userchat);
+				ClientChatThread frm = new ClientChatThread(s, sFile, userchat, fff);
 				frm.start();
 				
 			}catch(Exception e){
@@ -359,7 +360,7 @@ public class UserStatusGUI extends JFrame{
 	JButton btnStartChat;
 	
 	Socket socket = null;
-	public String username = "";
+	//public String username = "";
 	
 	private DefaultTableModel table = null;
 	private SocketPeer roleServer;

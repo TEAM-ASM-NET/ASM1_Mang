@@ -2,7 +2,6 @@ package Protocol;
 
 import java.io.*;
 
-import javax.management.modelmbean.XMLParseException;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
@@ -11,7 +10,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import java.util.logging.*;
 

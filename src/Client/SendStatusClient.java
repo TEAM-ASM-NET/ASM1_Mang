@@ -2,10 +2,6 @@ package Client;
 
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.JOptionPane;
 
 import Protocol.XMLProtocol;
 
@@ -30,7 +26,6 @@ public class SendStatusClient implements Runnable{
 				recieve = new DataInputStream(socket.getInputStream());
 				
 				String lstUser = recieve.readUTF();
-				//JOptionPane.showMessageDialog(null, lstUser + "DUoi read");
 				frm.UpdateJList(lstUser);
 				Thread.sleep(10000);
 			}
@@ -52,5 +47,4 @@ public class SendStatusClient implements Runnable{
 	Socket socket = null;
 	String username;
 	UserStatusGUI frm;
-//	static CountDownLatch countDownLatch = new CountDownLatch(1);
 }
