@@ -23,7 +23,8 @@ public class UserStatusGUI extends JFrame{
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-				Logout();
+				if (btnLogout.isEnabled())
+					Logout();
 			}
 		});
 		setSize(new Dimension(442, 362));
@@ -31,7 +32,7 @@ public class UserStatusGUI extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//socket = s;
 		Initially();
-		fff  =this;
+		fff  = this;
 	}
 	
 	private void Initially(){
@@ -203,16 +204,16 @@ public class UserStatusGUI extends JFrame{
 				//Recieve list user online from server
 				DataInputStream recieve = new DataInputStream(socket.getInputStream());
 				String lstUser = recieve.readUTF();
-				
-				if (!lstUser.equals(protocol.registerDeny()) || !lstUser.equals(protocol.loginDeny())){
+				JOptionPane.showMessageDialog(null, lstUser);
+				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
 					
 					UpdateJList(lstUser);
 					//Create listenner to accept other chat
-					JOptionPane.showMessageDialog(null, "tren role stt");
+					//JOptionPane.showMessageDialog(null, "tren role stt");
 					
 					roleServer = new SocketPeer(socket.getLocalPort() + 1);
 					roleServer.start();
-					JOptionPane.showMessageDialog(null, "duoi role");
+					//JOptionPane.showMessageDialog(null, "duoi role");
 					//Send status to server
 					SendStatusClient stt = new SendStatusClient(socket, txtusername.getText(), fff);
 					stt.start();
@@ -332,15 +333,16 @@ public class UserStatusGUI extends JFrame{
 				tb.removeAllElements();
 			}catch(Exception e){}
 			//JOptionPane.showMessageDialog(null, lstUser);
-		XMLProtocol protocol = new XMLProtocol();
-		table = protocol.parseString(lstUser);
-		DefaultListModel<String> tmp = new DefaultListModel<String>();
 		
-		list.setModel(tmp);
-		
-		for (int i = 0; i < table.getRowCount(); i++){
-			tmp.addElement(table.getValueAt(i, 0).toString());
-		}
+			XMLProtocol protocol = new XMLProtocol();
+			table = protocol.parseString(lstUser);
+			DefaultListModel<String> tmp = new DefaultListModel<String>();
+			
+			list.setModel(tmp);
+			
+			for (int i = 0; i < table.getRowCount(); i++){
+				tmp.addElement(table.getValueAt(i, 0).toString());
+			}
 		}
 		catch(Exception e){
 			System.out.println("Cann't take list user");

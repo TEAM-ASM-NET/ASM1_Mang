@@ -170,6 +170,11 @@ public class ServerForm extends JFrame{
 		frame.getContentPane().add(txtArea);
 		
 		JButton btnClose = new JButton("Close");
+		btnClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
 		springLayout.putConstraint(SpringLayout.NORTH, btnClose, 22, SpringLayout.SOUTH, txtArea);
 		springLayout.putConstraint(SpringLayout.WEST, btnClose, 12, SpringLayout.WEST, btnStart);
 		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnStart);
