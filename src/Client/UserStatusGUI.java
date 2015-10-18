@@ -23,7 +23,8 @@ public class UserStatusGUI extends JFrame{
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-				Logout();
+				if (btnLogout.isEnabled())
+					Logout();
 			}
 		});
 		setSize(new Dimension(442, 362));
@@ -149,7 +150,8 @@ public class UserStatusGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnConnect);
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Logout();
+				if (btnLogout.isEnabled())
+					Logout();
 				System.exit(0);
 			}
 		});
