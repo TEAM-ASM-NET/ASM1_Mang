@@ -213,7 +213,6 @@ public class UserStatusGUI extends JFrame{
 				if (!lstUser.equals(protocol.registerDeny()) && !lstUser.equals(protocol.loginDeny())){
 					
 					UpdateJList(lstUser);
-					//Create listenner to accept other chat
 
 					
 					roleServer = new SocketPeer(socket.getLocalPort() + 1, fff);
@@ -322,8 +321,10 @@ public class UserStatusGUI extends JFrame{
 				ddd.writeUTF(txtusername.getText());
 				ddd.flush();
 
+
 				//ddd.close();
 				ClientChatThread frm = new ClientChatThread(s, sFile, userchat, fff);
+
 				frm.start();
 				
 			}catch(Exception e){
