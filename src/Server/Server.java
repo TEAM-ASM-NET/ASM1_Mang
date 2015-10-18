@@ -3,7 +3,6 @@ package Server;
 import javax.swing.table.DefaultTableModel;
 
 import java.net.*;
-import java.io.*;
 
 public class Server implements Runnable{
 	protected DefaultTableModel table;

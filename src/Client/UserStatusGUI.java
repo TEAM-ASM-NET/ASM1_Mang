@@ -8,15 +8,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.net.*;
 import java.io.*;
+
 import javax.swing.table.*;
+
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+@SuppressWarnings("serial")
 public class UserStatusGUI extends JFrame{
 	private UserStatusGUI fff;
 	private JTextField txtHostname;
-	private JTextField txthostport;
+	public JTextField txthostport;
 	private JTextField txtusername;
 	private JPasswordField pwdTxtpass;
 	public UserStatusGUI() {
@@ -181,6 +184,7 @@ public class UserStatusGUI extends JFrame{
 
 	}
 
+	@SuppressWarnings("deprecation")
 	private void LoginOrResgister(boolean isLogin){
 		
 		if (!txtusername.getText().isEmpty() && !pwdTxtpass.getText().isEmpty()){
@@ -208,11 +212,9 @@ public class UserStatusGUI extends JFrame{
 					
 					UpdateJList(lstUser);
 					//Create listenner to accept other chat
-					JOptionPane.showMessageDialog(null, "tren role stt");
 					
 					roleServer = new SocketPeer(socket.getLocalPort() + 1);
 					roleServer.start();
-					JOptionPane.showMessageDialog(null, "duoi role");
 					//Send status to server
 					SendStatusClient stt = new SendStatusClient(socket, txtusername.getText(), fff);
 					stt.start();
@@ -235,7 +237,7 @@ public class UserStatusGUI extends JFrame{
 			
 			}
 			catch(Exception e){
-				System.out.println("kkkkk"+e.getMessage() + " vv " + e.getCause());
+				
 			}
 		}
 		else {
@@ -315,7 +317,7 @@ public class UserStatusGUI extends JFrame{
 				DataOutputStream ddd = new DataOutputStream(s.getOutputStream());
 				ddd.writeUTF(txtusername.getText());
 				ddd.flush();
-				//ddd.close();
+				
 				ClientChatThread frm = new ClientChatThread(s, sFile, userchat);
 				frm.start();
 				

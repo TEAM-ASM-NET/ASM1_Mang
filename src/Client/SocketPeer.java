@@ -1,6 +1,6 @@
 package Client;
 
-import java.awt.Dialog;
+
 import java.io.*;
 import java.net.*;
 import javax.swing.*;

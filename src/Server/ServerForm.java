@@ -24,7 +24,6 @@ import org.w3c.dom.NodeList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -168,13 +167,6 @@ public class ServerForm extends JFrame{
 		springLayout.putConstraint(SpringLayout.SOUTH, txtArea, 200, SpringLayout.SOUTH, lblDatafile);
 		springLayout.putConstraint(SpringLayout.EAST, txtArea, 0, SpringLayout.EAST, btnStart);
 		frame.getContentPane().add(txtArea);
-		
-		JButton btnClose = new JButton("Close");
-		springLayout.putConstraint(SpringLayout.NORTH, btnClose, 22, SpringLayout.SOUTH, txtArea);
-		springLayout.putConstraint(SpringLayout.WEST, btnClose, 12, SpringLayout.WEST, btnStart);
-		springLayout.putConstraint(SpringLayout.EAST, btnClose, 0, SpringLayout.EAST, btnStart);
-		btnClose.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		frame.getContentPane().add(btnClose);
 	}
 	public void RetryStart(int port){
 		if(server != null)

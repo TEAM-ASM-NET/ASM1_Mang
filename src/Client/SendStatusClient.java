@@ -2,10 +2,7 @@ package Client;
 
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import javax.swing.JOptionPane;
 
 import Protocol.XMLProtocol;
 
@@ -17,6 +14,7 @@ public class SendStatusClient implements Runnable{
 		frm = f;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void run(){
 		try{
 			Boolean d = true;

@@ -68,7 +68,7 @@ public class ServerThread extends Thread{
 		}
 		this.close();
 	}
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unused" })
 	@Override
 	public void run(){
 		form.txtArea.append("\nServer Thread "+ ID +" running.");
